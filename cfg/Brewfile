@@ -2,6 +2,8 @@
 brew "age"
 # Fuzzy finding from the shell.
 brew "fzf"
+# Create and manage GitHub repositories from the terminal.
+brew "gh"
 # Run and coordinate multiple coding agents from the terminal.
 brew "herdr"
 # Inspect and transform JSON from the command line.

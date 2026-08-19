@@ -1,0 +1,32 @@
+{
+  "name": "opinionated",
+  "version": "0.1.0",
+  "description": "Opinionated agent skills for clearer, more human work.",
+  "author": {
+    "name": "Stanley Fich",
+    "email": "sf@jadeiq.com",
+    "url": "https://github.com/ElmoJones3"
+  },
+  "homepage": "https://github.com/ElmoJones3/opinionated#readme",
+  "repository": "https://github.com/ElmoJones3/opinionated",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "claude",
+    "writing"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Opinionated",
+    "shortDescription": "Agent skills with a point of view.",
+    "longDescription": "A growing collection of agent skills for plain language, human writing, and less ceremony.",
+    "developerName": "Stanley Fich",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Use $unslop to remove AI tells from this writing.",
+      "Use $bruh to restate your last response plainly."
+    ]
+  }
+}

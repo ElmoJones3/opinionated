@@ -1,0 +1,16 @@
+{
+  "name": "opinionated",
+  "description": "Opinionated agent skills for clearer, more human work.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Stanley Fich",
+    "email": "sf@jadeiq.com"
+  },
+  "homepage": "https://github.com/ElmoJones3/opinionated",
+  "repository": "https://github.com/ElmoJones3/opinionated",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "writing"
+  ]
+}

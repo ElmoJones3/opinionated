@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Compound Components"
+  short_description: "Build discoverable multipart component APIs"
+  default_prompt: "Use $ui-compound-components to shape this multipart React component API."
+policy:
+  allow_implicit_invocation: true

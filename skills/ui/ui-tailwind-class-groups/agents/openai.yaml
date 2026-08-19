@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Tailwind Class Groups"
+  short_description: "Group long Tailwind class lists by concern"
+  default_prompt: "Use $ui-tailwind-class-groups to format the Tailwind classes in this React component."
+policy:
+  allow_implicit_invocation: true

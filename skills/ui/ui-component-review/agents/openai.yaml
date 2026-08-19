@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Review"
+  short_description: "Audit components against the UI rule set"
+  default_prompt: "Use $ui-component-review to audit this React component against every applicable UI rule."
+policy:
+  allow_implicit_invocation: false

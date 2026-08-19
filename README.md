@@ -80,6 +80,24 @@ The remix already has opinions. A fake architectural "fork" becomes a short list
 
 ## Install the skills
 
+There are two ways in. Use the Skills CLI when you want ordinary files in a project. Clone the repository when you want to edit the skills here and have those edits go live on your machine. Installing the same skill both ways can leave your agent with duplicate names.
+
+### Codex, Claude Code, and other agents
+
+Run this inside the project that should receive the skills:
+
+```bash
+npx skills@latest add ElmoJones3/opinionated
+```
+
+The installer finds `bruh` and `unslop`, then asks which skills and coding agents you want. It copies the selected files into the project and records their source in `skills-lock.json`. Pull later changes when you choose:
+
+```bash
+npx skills update
+```
+
+### Work on the skills themselves
+
 Clone the repository somewhere permanent, then link the skills into your personal agent directory:
 
 ```bash

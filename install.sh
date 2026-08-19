@@ -9,7 +9,7 @@ usage() {
   printf '%s\n' \
     "Usage: ./install.sh [--claude]" \
     "" \
-    "Links every skill into ~/.agents/skills." \
+    "Links every skill below skills/ into ~/.agents/skills." \
     "Pass --claude to link them into ~/.claude/skills too."
 }
 
@@ -36,14 +36,13 @@ done
 
 link_skills() {
   local target_root="$1"
-  local skill_dir skill_name target
+  local skill_file skill_dir skill_name target
   local installed=0
 
   mkdir -p "$target_root"
 
-  for skill_dir in "$repo_dir"/skills/*; do
-    [[ -f "$skill_dir/SKILL.md" ]] || continue
-
+  while IFS= read -r -d '' skill_file; do
+    skill_dir="${skill_file%/SKILL.md}"
     skill_name="$(basename "$skill_dir")"
     target="$target_root/$skill_name"
 
@@ -60,7 +59,7 @@ link_skills() {
     ln -s "$skill_dir" "$target"
     printf 'Linked %s -> %s\n' "$target" "$skill_dir"
     installed=$((installed + 1))
-  done
+  done < <(find "$repo_dir/skills" -type f -name SKILL.md -print0)
 
   (( installed > 0 )) || die "no skills found in $repo_dir/skills"
 }

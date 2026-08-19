@@ -103,6 +103,9 @@ backup_and_link "$zsh_config" "$HOME/.zshrc"
 log "Installing mise-managed runtimes"
 "$HOME/.local/bin/mise" install --yes
 
+log "Configuring Git"
+"$repo_dir/cfg/git.sh"
+
 log "Bootstrap complete"
 printf '%s\n' \
   "Manual follow-up:" \

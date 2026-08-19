@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 brewfile="$repo_dir/cfg/Brewfile"
 mise_config="$repo_dir/cfg/mise.toml"
 zsh_config="$repo_dir/cfg/zshrc"

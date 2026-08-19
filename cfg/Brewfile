@@ -1,0 +1,18 @@
+# Recipient-based encryption used by sops for repository-safe secrets.
+brew "age"
+# Fuzzy finding from the shell.
+brew "fzf"
+# Run and coordinate multiple coding agents from the terminal.
+brew "herdr"
+# Inspect and transform JSON from the command line.
+brew "jq"
+# Fast recursive text search for repositories and shell workflows.
+brew "ripgrep"
+# Encrypt structured configuration while leaving it reviewable in Git.
+brew "sops"
+# Jump quickly among frequently used directories.
+brew "zoxide"
+# OpenAI's terminal coding agent.
+cask "codex"
+# Primary terminal, installed before the rest of the environment.
+cask "ghostty"

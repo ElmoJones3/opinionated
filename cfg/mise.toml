@@ -1,0 +1,8 @@
+[tools]
+# Track current Go and Node releases for general development.
+go = "latest"
+node = "latest"
+
+# Python 3.12 is the newest practical line for the PyTorch stack used with V100 GPUs.
+# Newer Python releases commonly lead framework support in LLM and BERT workflows.
+python = "3.12"

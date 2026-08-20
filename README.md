@@ -70,13 +70,17 @@ The skills use the open [Agent Skills](https://agentskills.io/) format. The same
 
 ### bruh
 
-[`bruh`](skills/bruh/SKILL.md) restates the last response in plain language. It began as Lauren Tan's wonderfully direct `bro` skill. I renamed it to match the man invoking it. It runs only when called.
+[`bruh`](skills/communication/bruh/SKILL.md) restates the last response in plain language. It began as Lauren Tan's wonderfully direct `bro` skill. I renamed it to match the man invoking it. It runs only when called.
 
 ### unslop
 
-[`unslop`](skills/unslop/SKILL.md) removes AI tells and puts a human voice back into the answer. Lauren's original is excellent, so this copy keeps most of her rule set and gives her credit.
+[`unslop`](skills/communication/unslop/SKILL.md) removes AI tells and puts a human voice back into the answer. Lauren's original is excellent, so this copy keeps most of her rule set and gives her credit.
 
 The remix already has opinions. A fake architectural "fork" becomes a short list of options and a direct request for the decision. "Load-bearing" is gone in favor of naming the real dependency. More irritations will earn rules as they reveal themselves.
+
+### stay in your lane
+
+[`stay-in-your-lane`](skills/communication/stay-in-your-lane/SKILL.md) keeps the agent inside the authority it was given. The user owns scope, priorities, pace, and purpose. The agent executes, reports concrete blockers, and saves opinions for when they are requested. YAGNI does not overrule explicit scope, and an agent never tells the user when to stop working.
 
 ### ui
 
@@ -141,7 +145,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `cfg/git.sh` | Git identity, SSH key setup, and commit signing. |
 | `cfg/setup.sh` | The macOS rebuild sequence. |
 | `skills/` | Canonical, agent-neutral skill instructions. |
-| `skills/*/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
+| `skills/**/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
 | `.codex-plugin/` | Codex and ChatGPT plugin metadata. |
 | `.claude-plugin/` | Claude Code plugin and marketplace metadata. |
 | `install.sh` | Personal skill installation through live symlinks. |
@@ -160,7 +164,7 @@ After adding one:
 
 ## Acknowledgements
 
-[`bruh`](skills/bruh/SKILL.md) and [`unslop`](skills/unslop/SKILL.md) started with work by [Lauren Tan](https://github.com/poteto) in Cursor's [pstack plugin](https://github.com/cursor/plugins/tree/main/pstack). Her original MIT notice is preserved in each adapted skill directory. These are remixes, not an attempt to claim the excellent first draft.
+[`bruh`](skills/communication/bruh/SKILL.md) and [`unslop`](skills/communication/unslop/SKILL.md) started with work by [Lauren Tan](https://github.com/poteto) in Cursor's [pstack plugin](https://github.com/cursor/plugins/tree/main/pstack). Her original MIT notice is preserved in each adapted skill directory. These are remixes, not an attempt to claim the excellent first draft.
 
 ## License
 

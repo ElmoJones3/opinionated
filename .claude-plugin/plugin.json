@@ -18,10 +18,12 @@
     "writing"
   ],
   "skills": [
-    "./skills/bruh/",
+    "./skills/communication/bruh/",
+    "./skills/communication/stay-in-your-lane/",
+    "./skills/communication/unslop/",
     "./skills/engineering/domain-modeling/",
-    "./skills/productivity/semantic-mapping/",
-    "./skills/productivity/semantic-snapshot/",
+    "./skills/engineering/semantic-mapping/",
+    "./skills/engineering/semantic-snapshot/",
     "./skills/security/sops-audit/",
     "./skills/security/sops-naming/",
     "./skills/security/sops-setup/",
@@ -33,6 +35,6 @@
     "./skills/ui/ui-component-style-groups/",
     "./skills/ui/ui-component-variants/",
     "./skills/ui/ui-compound-components/",
-    "./skills/unslop/"
+    "./skills/ui/ui-principle-state-management/"
   ]
 }

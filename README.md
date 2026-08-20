@@ -122,6 +122,15 @@ The installer refuses to overwrite a skill it does not manage. Because the insta
 
 The repository also includes `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json` for packaged distribution. Autocomplete handles the plugin namespace.
 
+Claude Code can install the whole collection as a namespaced plugin:
+
+```text
+/plugin marketplace add ElmoJones3/opinionated
+/plugin install opinionated@opinionated
+```
+
+Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as `/opinionated:unslop`.
+
 ## Repository map
 
 | Path | What is there |
@@ -134,12 +143,14 @@ The repository also includes `.codex-plugin/plugin.json` and `.claude-plugin/plu
 | `skills/` | Canonical, agent-neutral skill instructions. |
 | `skills/*/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
 | `.codex-plugin/` | Codex and ChatGPT plugin metadata. |
-| `.claude-plugin/` | Claude Code plugin metadata. |
+| `.claude-plugin/` | Claude Code plugin and marketplace metadata. |
 | `install.sh` | Personal skill installation through live symlinks. |
 
 ## Add a skill
 
-Each skill lives at `skills/<name>/SKILL.md`. Keep the main instructions agent-neutral. Put host metadata under `agents/`, preserve upstream licenses, and say where remixed work came from.
+Each skill lives below `skills/` in a directory containing `SKILL.md`. Keep the main instructions agent-neutral. Put host metadata under `agents/`, preserve upstream licenses, and say where remixed work came from.
+
+Add the skill directory to the `skills` array in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). Claude needs explicit paths because this repository groups some skills into category directories.
 
 After adding one:
 

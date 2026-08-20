@@ -76,19 +76,21 @@ import { describe, expect, it } from 'vitest'
 
 describe('reducePanel', () => {
   it('starts opening when requested', () => {
-    expect(reducePanel({ status: 'closed' }, { type: 'openRequested' })).toEqual({
+    expect(reducePanel(initialPanelState, { type: 'openRequested' })).toEqual({
       status: 'opening',
     })
   })
 
   it('finishes the opening animation', () => {
-    expect(reducePanel({ status: 'opening' }, { type: 'animationFinished' })).toEqual({
+    const opening = reducePanel(initialPanelState, { type: 'openRequested' })
+
+    expect(reducePanel(opening, { type: 'animationFinished' })).toEqual({
       status: 'open',
     })
   })
 
   it('ignores close requests while already closed', () => {
-    const closed: PanelState = { status: 'closed' }
+    const closed = initialPanelState
 
     expect(reducePanel(closed, { type: 'closeRequested' })).toBe(closed)
   })

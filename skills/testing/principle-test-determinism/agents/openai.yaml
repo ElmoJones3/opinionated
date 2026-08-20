@@ -1,0 +1,6 @@
+interface:
+  display_name: "Deterministic Tests"
+  short_description: "Control time, scheduling, randomness, and races"
+  default_prompt: "Use $principle-test-determinism to remove timing and randomness from this test."
+policy:
+  allow_implicit_invocation: true

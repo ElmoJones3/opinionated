@@ -19,6 +19,8 @@ Report a missing skill. Do not recreate its rules from memory.
 
 Read the sync skill's script and test references before implementing them. Adapt the managed paths, environment loading, and task-runner commands to the target repository. Keep the state table and failure behavior intact.
 
+Load `principle-testing-guidelines` before adding or changing the test. The sync skill supplies the SOPS-specific contract; the testing skills own fixtures, state-transition proof, dependency boundaries, and execution evidence.
+
 ## Inspect the repository
 
 - Find existing SOPS configuration, secret names, ignore rules, task runners, environment loaders, scripts, tests, and application consumers.

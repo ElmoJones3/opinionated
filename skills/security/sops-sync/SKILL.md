@@ -57,6 +57,8 @@ Create missing plaintext. If plaintext already exists, compare it with the decry
 
 ## Dry-run and test
 
+Load `principle-testing-guidelines`. Apply `principle-test-proof-state-transitions`, `principle-test-fixtures`, `principle-test-boundaries`, and `principle-test-execution` to this workflow.
+
 Dry-run must execute the same validation, staging, normalization, and comparison path while skipping destination replacement. It may decrypt into private temporary files, so do not describe it as a no-access operation.
 
 Test observable state transitions with generated identities and synthetic secrets. Cover permissions, conflicts, unchanged content, missing inputs, corrupt ciphertext, dry-run, forced recovery, and batch preflight failure.

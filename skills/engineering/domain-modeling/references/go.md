@@ -164,6 +164,21 @@ import (
 	"example.com/project/internal/domains/accounts"
 )
 
+func lockedAccount(t *testing.T) accounts.Account {
+	t.Helper()
+	account, err := accounts.New("acct-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range 3 {
+		account, err = account.RecordFailedLogin()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	return account
+}
+
 func TestFailedLoginLocksAccountOnThirdAttempt(t *testing.T) {
 	account, err := accounts.New("acct-1")
 	if err != nil {
@@ -183,24 +198,21 @@ func TestFailedLoginLocksAccountOnThirdAttempt(t *testing.T) {
 }
 
 func TestLockedAccountRejectsAnotherFailedLogin(t *testing.T) {
-	account, err := accounts.Hydrate(domain.Object{ID: "acct-1"}, accounts.Locked, 3)
-	if err != nil {
-		t.Fatal(err)
-	}
+	account := lockedAccount(t)
 
-	_, err = account.RecordFailedLogin()
+	next, err := account.RecordFailedLogin()
 	if !errors.Is(err, accounts.ErrAccountNotActive) {
 		t.Fatalf("expected ErrAccountNotActive, got %v", err)
+	}
+	if next.State() != accounts.Locked || next.FailedLoginAttempts() != 3 {
+		t.Fatalf("rejected transition changed state: %+v", next)
 	}
 }
 
 func TestUnlockResetsFailures(t *testing.T) {
-	account, err := accounts.Hydrate(domain.Object{ID: "acct-1"}, accounts.Locked, 3)
-	if err != nil {
-		t.Fatal(err)
-	}
+	account := lockedAccount(t)
 
-	account, err = account.Unlock()
+	account, err := account.Unlock()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -215,9 +227,12 @@ func TestActiveAccountRejectsUnlock(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = account.Unlock()
+	next, err := account.Unlock()
 	if !errors.Is(err, accounts.ErrAccountNotLocked) {
 		t.Fatalf("expected ErrAccountNotLocked, got %v", err)
+	}
+	if next.State() != accounts.Active || next.FailedLoginAttempts() != 0 {
+		t.Fatalf("rejected transition changed state: %+v", next)
 	}
 }
 

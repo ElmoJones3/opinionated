@@ -111,6 +111,14 @@ import { describe, expect, it } from 'vitest'
 
 import { Account, IllegalAccountTransition } from './account'
 
+function lockedAccount(): Account {
+  let account = Account.create({ id: 'acct-1' })
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    account = Account.recordFailedLogin(account)
+  }
+  return account
+}
+
 describe('Account', () => {
   it('locks on the third failed login', () => {
     let account = Account.create({ id: 'acct-1' })
@@ -124,21 +132,17 @@ describe('Account', () => {
   })
 
   it('rejects another failed login while locked', () => {
-    const account = Account.hydrate({
-      id: 'acct-1',
-      state: 'locked',
-      failedLoginAttempts: 3,
-    })
+    const account = lockedAccount()
 
     expect(() => Account.recordFailedLogin(account)).toThrow(IllegalAccountTransition)
+    expect(() => Account.recordFailedLogin(account)).toThrow(
+      'only an active account can record a failed login',
+    )
+    expect(account).toEqual({ id: 'acct-1', state: 'locked', failedLoginAttempts: 3 })
   })
 
   it('unlocks and resets the failed count', () => {
-    const account = Account.hydrate({
-      id: 'acct-1',
-      state: 'locked',
-      failedLoginAttempts: 3,
-    })
+    const account = lockedAccount()
 
     const nextAccount = Account.unlock(account)
 
@@ -150,6 +154,8 @@ describe('Account', () => {
     const account = Account.create({ id: 'acct-1' })
 
     expect(() => Account.unlock(account)).toThrow(IllegalAccountTransition)
+    expect(() => Account.unlock(account)).toThrow('only a locked account can be unlocked')
+    expect(account).toEqual({ id: 'acct-1', state: 'active', failedLoginAttempts: 0 })
   })
 
   it('rejects impossible hydrated state', () => {

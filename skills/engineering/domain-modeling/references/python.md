@@ -111,6 +111,13 @@ from pydantic import ValidationError
 from app.domains.accounts import Account, AccountState, IllegalAccountTransition
 
 
+def locked_account() -> Account:
+    account = Account.create("acct-1")
+    for _ in range(3):
+        account = account.record_failed_login()
+    return account
+
+
 def test_third_failed_login_locks_account() -> None:
     account = Account.create("acct-1")
 
@@ -122,22 +129,20 @@ def test_third_failed_login_locks_account() -> None:
 
 
 def test_locked_account_rejects_another_failed_login() -> None:
-    account = Account(
-        id="acct-1",
-        state=AccountState.LOCKED,
-        failed_login_attempts=3,
-    )
+    account = locked_account()
 
-    with pytest.raises(IllegalAccountTransition):
+    with pytest.raises(
+        IllegalAccountTransition,
+        match="only an active account can record a failed login",
+    ):
         account.record_failed_login()
+
+    assert account.state is AccountState.LOCKED
+    assert account.failed_login_attempts == 3
 
 
 def test_unlock_resets_failures() -> None:
-    account = Account(
-        id="acct-1",
-        state=AccountState.LOCKED,
-        failed_login_attempts=3,
-    )
+    account = locked_account()
 
     account = account.unlock()
 
@@ -148,12 +153,18 @@ def test_unlock_resets_failures() -> None:
 def test_active_account_rejects_unlock() -> None:
     account = Account.create("acct-1")
 
-    with pytest.raises(IllegalAccountTransition):
+    with pytest.raises(
+        IllegalAccountTransition,
+        match="only a locked account can be unlocked",
+    ):
         account.unlock()
+
+    assert account.state is AccountState.ACTIVE
+    assert account.failed_login_attempts == 0
 
 
 def test_hydration_rejects_impossible_state() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match="locked account must have three failed logins"):
         Account.model_validate(
             {
                 "id": "acct-1",
@@ -172,7 +183,7 @@ def test_boundary_validation_rejects_bypassed_copy() -> None:
         }
     )
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match="locked account must have three failed logins"):
         Account.model_validate(bypassed)
 ```
 

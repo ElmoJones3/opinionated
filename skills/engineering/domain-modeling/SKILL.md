@@ -18,7 +18,7 @@ Before naming or renaming a domain concept, load `semantic-mapping` when it is a
 2. Identify the responsible domain object. It is the thing whose state or invariant changes.
 3. Classify each change as a command or consequence.
 4. Define its inputs, legal starting states, resulting state, forced effects, and failures.
-5. Write those claims as behavioral tests before implementing the model.
+5. Load `principle-testing-guidelines`, choose the proof skills the claims require, and write the behavioral tests before implementing the model.
 6. Give the responsible object a public entry point that owns the complete contract.
 7. Keep callers responsible for orchestration. Do not let them restate domain rules.
 8. Add whole-object validation for hydration and other paths that bypass normal behavior.
@@ -32,7 +32,7 @@ A command represents an explicit decision by an actor or system. Its entry point
 
 A consequence occurs because a domain fact happened. Name its entry point for that fact or trigger, then let the object derive the resulting state. Do not expose a shortcut that sets the consequence without earning it.
 
-For every behavior, make these answers visible in code and tests:
+For every behavior, make these answers visible in code and its domain-specific proofs:
 
 - accepted inputs and relevant actor;
 - legal and illegal starting states;
@@ -66,7 +66,7 @@ Each reference implements the same contract. Adapt its language pattern to the r
 - The domain API exposes commands and consequences, not state-setting shortcuts. Whole validation rejects framework and hydration bypasses.
 - Callers load, authorize, call, persist, and publish without duplicating the object's rules.
 - Hydration and bypass paths run whole-object validation.
-- Tests prove legal behavior, rejected behavior, forced effects, and validation failures through the public contract.
+- Domain proofs cover legal behavior, rejected behavior, forced effects, and validation failures through the public contract. The testing skills own fixture, execution, boundary, and general proof rules.
 - Validators and transitions avoid I/O and hidden ambient state.
 
 After a successful model establishes settled terms or ownership, load `semantic-mapping` if needed and apply it. If it is unavailable, report the handoff instead of inventing semantic files. Record the vocabulary, not the behavior contract.

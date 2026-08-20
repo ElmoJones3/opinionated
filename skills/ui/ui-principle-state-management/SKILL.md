@@ -39,6 +39,8 @@ Immer is the default. RxJS is the exception for streams. Do not write object-spr
 
 ## Test the state model directly
 
+Load `principle-testing-guidelines`. Use `principle-test-proof-state-transitions` for reducers and producers, `principle-test-determinism` for timed streams, and `principle-test-boundaries` for UI wiring or external owners.
+
 Every application-owned state model requires direct tests:
 
 - Reducer tests pass current state and an event, then assert the exact next state.

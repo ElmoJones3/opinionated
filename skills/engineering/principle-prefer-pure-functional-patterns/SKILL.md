@@ -23,9 +23,9 @@ Do not introduce a pipeline helper, custom result type, immutable collection lib
 
 ## Prove the behavior directly
 
-For new behavior, write the smallest input, output, or failure test first. Before refactoring existing behavior, characterize what must remain true. Prove the exact output for known inputs and the failure or ordering behavior that matters. When aliasing is possible, also prove that the input and its nested mutable values remain unchanged.
+Load `principle-testing-guidelines`. New transformations use `principle-test-tdd`; refactors without a settled contract use `principle-test-characterization`; validators, calculations, modifiers, and pipelines use `principle-test-proof-transformations`; reducers and other state-plus-input operations use `principle-test-proof-state-transitions`.
 
-If stateful code is necessary, test its pure decision function separately from the stateful adapter. Give the adapter a focused boundary test. Use an integration test when correctness depends on the real external system.
+If stateful code is necessary, prove the pure decision separately. Let `principle-test-boundaries` choose the adapter proof instead of assuming every effect needs an integration test.
 
 ## Use the language reference
 

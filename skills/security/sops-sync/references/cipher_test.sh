@@ -47,6 +47,10 @@ assert_contains() {
   [[ "$value" == *"$expected"* ]] || fail "output did not contain: $expected"
 }
 
+assert_same_file() {
+  cmp -s "$1" "$2" || fail "file content differed: $1 != $2"
+}
+
 file_hash() {
   if command -v shasum >/dev/null 2>&1; then
     shasum -a 256 "$1" | awk '{print $1}'
@@ -81,9 +85,47 @@ run_cipher_without_key() {
     "$fixture/scripts/cipher.sh" "$@"
 }
 
-mkdir -p "$fixture/scripts" "$fixture/config" "$fixture/secrets" "$fixture/home"
+run_cipher_with_failing_second_commit() {
+  printf '0\n' >"$test_root/mv-count"
+  PATH="$test_root/fail-bin:$PATH" \
+    CIPHER_TEST_REAL_MV="$real_mv" \
+    CIPHER_TEST_MV_COUNTER="$test_root/mv-count" \
+    HOME="$fixture/home" SOPS_AGE_KEY_FILE='~/key.txt' \
+    "$fixture/scripts/cipher.sh" "$@"
+}
+
+decrypt_expected() {
+  HOME="$fixture/home" SOPS_AGE_KEY_FILE="$fixture/home/key.txt" \
+    sops --input-type yaml --output-type yaml --decrypt --output "$2" "$1"
+}
+
+mkdir -p \
+  "$fixture/scripts" \
+  "$fixture/config" \
+  "$fixture/secrets" \
+  "$fixture/home" \
+  "$test_root/fail-bin" \
+  "$test_root/expected/config" \
+  "$test_root/expected/secrets"
 cp "$subject" "$fixture/scripts/cipher.sh"
 chmod +x "$fixture/scripts/cipher.sh"
+real_mv="$(command -v mv)"
+cat >"$test_root/fail-bin/mv" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+count=0
+if [[ -f "$CIPHER_TEST_MV_COUNTER" ]]; then
+  read -r count <"$CIPHER_TEST_MV_COUNTER"
+fi
+count=$((count + 1))
+printf '%s\n' "$count" >"$CIPHER_TEST_MV_COUNTER"
+if [[ "$count" -eq 2 ]]; then
+  exit 1
+fi
+exec "$CIPHER_TEST_REAL_MV" "$@"
+EOF
+chmod +x "$test_root/fail-bin/mv"
 age-keygen -o "$fixture/home/key.txt" >/dev/null 2>&1
 recipient="$(age-keygen -y "$fixture/home/key.txt")"
 
@@ -148,6 +190,29 @@ run_cipher encrypt >/dev/null
 [[ "$(file_hash "$fixture/secrets/client.secret.sops.yaml")" == "$client_cipher_hash" ]] || \
   fail "unchanged client ciphertext was rewritten"
 
+app_cipher_mode="$(file_mode "$fixture/config/app.secret.sops.yaml")"
+worker_cipher_mode="$(file_mode "$fixture/config/worker.secret.sops.yaml")"
+cp "$fixture/config/app.secret.yaml" "$test_root/app.rollback.secret.yaml"
+cp "$fixture/config/worker.secret.yaml" "$test_root/worker.rollback.secret.yaml"
+printf '\nrollback_probe: app\n' >>"$fixture/config/app.secret.yaml"
+printf '\nrollback_probe: worker\n' >>"$fixture/config/worker.secret.yaml"
+if run_cipher_with_failing_second_commit encrypt \
+  config/app.secret.yaml config/worker.secret.yaml >/dev/null 2>&1; then
+  fail "encrypt accepted a failed second destination replacement"
+fi
+assert_file "$fixture/config/app.secret.sops.yaml"
+assert_file "$fixture/config/worker.secret.sops.yaml"
+[[ "$(file_hash "$fixture/config/app.secret.sops.yaml")" == "$app_cipher_hash" ]] || \
+  fail "rollback did not restore app ciphertext bytes"
+[[ "$(file_hash "$fixture/config/worker.secret.sops.yaml")" == "$worker_cipher_hash" ]] || \
+  fail "rollback did not restore worker ciphertext bytes"
+[[ "$(file_mode "$fixture/config/app.secret.sops.yaml")" == "$app_cipher_mode" ]] || \
+  fail "rollback did not restore app ciphertext mode"
+[[ "$(file_mode "$fixture/config/worker.secret.sops.yaml")" == "$worker_cipher_mode" ]] || \
+  fail "rollback did not restore worker ciphertext mode"
+cp "$test_root/app.rollback.secret.yaml" "$fixture/config/app.secret.yaml"
+cp "$test_root/worker.rollback.secret.yaml" "$fixture/config/worker.secret.yaml"
+
 printf '\nlocal_change: true\n' >>"$fixture/config/app.secret.yaml"
 dry_output="$(run_cipher encrypt --dry-run config/app.secret.yaml)"
 assert_contains "$dry_output" "would update ciphertext"
@@ -167,6 +232,16 @@ run_cipher encrypt config/app.secret.yaml >/dev/null
 [[ "$(file_hash "$fixture/config/app.secret.sops.yaml")" != "$app_cipher_hash" ]] || \
   fail "changed plaintext did not update ciphertext"
 
+decrypt_expected \
+  "$fixture/config/app.secret.sops.yaml" \
+  "$test_root/expected/config/app.secret.yaml"
+decrypt_expected \
+  "$fixture/config/worker.secret.sops.yaml" \
+  "$test_root/expected/config/worker.secret.yaml"
+decrypt_expected \
+  "$fixture/secrets/client.secret.sops.yaml" \
+  "$test_root/expected/secrets/client.secret.yaml"
+
 rm "$fixture/config/app.secret.yaml" "$fixture/config/worker.secret.yaml" "$fixture/secrets/client.secret.yaml"
 dry_output="$(run_cipher decrypt --dry-run)"
 assert_contains "$dry_output" "would create plaintext"
@@ -182,6 +257,15 @@ for plaintext in \
   assert_file "$plaintext"
   [[ "$(file_mode "$plaintext")" == 600 ]] || fail "wrong plaintext mode for $plaintext"
 done
+assert_same_file \
+  "$fixture/config/app.secret.yaml" \
+  "$test_root/expected/config/app.secret.yaml"
+assert_same_file \
+  "$fixture/config/worker.secret.yaml" \
+  "$test_root/expected/config/worker.secret.yaml"
+assert_same_file \
+  "$fixture/secrets/client.secret.yaml" \
+  "$test_root/expected/secrets/client.secret.yaml"
 
 worker_inode="$(file_inode "$fixture/config/worker.secret.yaml")"
 run_cipher decrypt >/dev/null
@@ -201,9 +285,9 @@ assert_contains "$force_dry_output" "would replace plaintext"
   fail "forced decrypt dry-run changed plaintext"
 
 run_cipher decrypt --force config/worker.secret.yaml >/dev/null
-if grep -q '^local_only:' "$fixture/config/worker.secret.yaml"; then
-  fail "forced decrypt did not restore ciphertext content"
-fi
+assert_same_file \
+  "$fixture/config/worker.secret.yaml" \
+  "$test_root/expected/config/worker.secret.yaml"
 [[ "$(file_mode "$fixture/config/worker.secret.yaml")" == 600 ]] || \
   fail "forced decrypt changed plaintext permissions"
 

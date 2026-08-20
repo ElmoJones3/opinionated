@@ -1,0 +1,6 @@
+interface:
+  display_name: "State Transition Proofs"
+  short_description: "Prove legal edges, effects, no-ops, and rollback"
+  default_prompt: "Use $principle-test-proof-state-transitions to prove this state machine's complete transition table."
+policy:
+  allow_implicit_invocation: true

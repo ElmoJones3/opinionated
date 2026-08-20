@@ -64,7 +64,7 @@ This repository does not contain secrets. The tools are part of my baseline beca
 
 ## Agent skills
 
-The repository currently has 19 skills in four categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
+The repository currently has 31 skills in five categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
@@ -73,6 +73,7 @@ The skills follow the open [Agent Skills](https://agentskills.io/) format. The s
 | [Communication](skills/communication/README.md) | 3 | Plain language, human voice, and respect for user authority. |
 | [Engineering](skills/engineering/README.md) | 4 | Domain behavior, pure transformations, project terminology, and decision records. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
+| [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
 | [UI](skills/ui/README.md) | 8 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, and state. |
 
 Some rules are mandatory whenever their subject appears. Explicit review skills run only when asked. The frontmatter says which is which; the prose does not get to quietly weaken it.
@@ -138,6 +139,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `skills/communication/` | Rules for language, voice, and agent authority. |
 | `skills/engineering/` | Rules for domain code, value transformations, terminology, and ADRs. |
 | `skills/security/` | SOPS setup, synchronization, naming, and audit rules. |
+| `skills/testing/` | Testing process, proof strategies, fixtures, boundaries, determinism, execution, and support. |
 | `skills/ui/` | React component authoring rules and the explicit review pass. |
 | `skills/**/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
 | `.codex-plugin/` | Shared ChatGPT and Codex plugin metadata. |
@@ -146,7 +148,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 
 ## Add a skill
 
-Each skill lives in one of the four category directories and contains `SKILL.md`. Keep the main instructions agent-neutral. Put OpenAI presentation metadata under `agents/`, preserve upstream licenses, and say where remixed work came from. Update the category README when the skill changes what that category claims to cover.
+Each skill lives in one of the five category directories and contains `SKILL.md`. Keep the main instructions agent-neutral. Put OpenAI presentation metadata under `agents/`, preserve upstream licenses, and say where remixed work came from. Update the category README when the skill changes what that category claims to cover.
 
 Add the skill directory to the `skills` array in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). Claude needs explicit paths because this repository groups some skills into category directories.
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Characterization Tests"
+  short_description: "Pin current behavior before refactoring"
+  default_prompt: "Use $principle-test-characterization to capture the observable behavior this refactor must preserve."
+policy:
+  allow_implicit_invocation: true

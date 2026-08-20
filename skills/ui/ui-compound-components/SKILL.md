@@ -1,28 +1,64 @@
 ---
 name: ui-compound-components
-description: Export multipart React component families through Object.assign. Use when creating or changing APIs with related parts such as Dialog.Trigger, Dialog.Content, or Tabs.List.
+description: Keep component families under one root export. Mandatory when consumers combine several parts to build one control.
 user-invocable: false
 ---
 
 # Export compound components
 
-Expose a multipart component and its related parts through one import. Consumers should discover the complete API from the root component in autocomplete.
+Treat one control as one public API, even when its implementation has several parts. Consumers import the root once and discover every part from it.
+
+## Recognize a component family
+
+A component family shares state, context, behavior, or structure that makes its parts meaningful together.
+
+`Dialog.Trigger` opens `Dialog.Content`. `Tabs.Trigger` selects `Tabs.Content`. These parts build one control. Do not publish them as a list of peer imports.
+
+```tsx
+// Wrong. One control requires a pile of imports.
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './dialog'
+```
+
+Expose the family through its root:
+
+```tsx
+import { Dialog } from './dialog'
+
+<Dialog>
+  <Dialog.Trigger />
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>Account settings</Dialog.Title>
+      <Dialog.Description>Update your profile.</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer />
+  </Dialog.Content>
+</Dialog>
+```
 
 ## Build the public API
 
-Define the root and each part, then attach the parts with `Object.assign`:
+Define the root and its parts, then attach every public part with `Object.assign`:
 
 ```tsx
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
-  return <DialogPrimitive.Root {...props} data-slot="dialog" />;
+  return <DialogPrimitive.Root {...props} data-slot="dialog" />
 }
 
 function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
-  return <DialogPrimitive.Trigger {...props} data-slot="dialog-trigger" />;
+  return <DialogPrimitive.Trigger {...props} data-slot="dialog-trigger" />
 }
 
 function DialogContent({ ...props }: DialogPrimitive.Content.Props) {
-  return <DialogPrimitive.Content {...props} data-slot="dialog-content" />;
+  return <DialogPrimitive.Content {...props} data-slot="dialog-content" />
 }
 
 const DialogCompound = Object.assign(Dialog, {
@@ -33,32 +69,18 @@ const DialogCompound = Object.assign(Dialog, {
   Title: DialogTitle,
   Description: DialogDescription,
   displayName: 'Dialog',
-});
+})
 
-export { DialogCompound as Dialog };
+export { DialogCompound as Dialog }
 ```
 
-Consumers get one import and one discoverable namespace:
-
-```tsx
-<Dialog>
-  <Dialog.Trigger />
-  <Dialog.Content>
-    <Dialog.Title>Account settings</Dialog.Title>
-  </Dialog.Content>
-</Dialog>
-```
-
-## Keep the boundary clear
-
-- Attach every public part that belongs to the component family.
+- Attach every public part in the family.
 - Set `displayName` on the compound for React DevTools.
 - Export the compound under the root name.
-- Keep a single-part component such as `Button` or `Input` as a plain named export.
-- Do not create a compound merely to collect unrelated components.
+- Keep implementation files separate when useful. The public import stays unified.
+- Keep single-part components such as `Button` and `Input` as plain exports.
+- Do not attach independent components merely to shorten imports.
 
-## Accept the tradeoff
+## Ship one public unit
 
-`Object.assign` prevents bundlers from removing individual attached parts reliably. Accept that cost for component families where one import and autocomplete matter more than per-part tree shaking.
-
-Do not apply this rule to single-part components.
+`Object.assign` prevents reliable per-part tree shaking. Compound families ship as one public unit. Do not split their public imports to optimize individual parts.

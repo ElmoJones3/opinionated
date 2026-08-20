@@ -1,136 +1,93 @@
 ---
 name: ui-component-layout
-description: Structure layout-bearing React components as Shell, Constraint, and Layout layers driven by container queries. Use for cards, forms, sections, visualizations, page templates, responsive grids, and flex layouts. Do not use for single controls.
+description: Enforce the Base.Shell -> Base.Constraint -> Base.Layout grammar. Mandatory when creating or changing a React component that arranges children or responds to available space.
 user-invocable: false
 ---
 
-# Structure component layouts
+# Enforce the Base layout grammar
 
-Separate layout responsibilities into Shell, Constraint, and Layout elements. Each element owns one job. The component then responds to the space it receives instead of assuming where the page placed it.
+Every project must have one shared `Base` layout compound, or a project-standard equivalent, with `Base.Shell`, `Base.Constraint`, and `Base.Layout`.
 
-## Choose the required layers
+Base owns its defaults and reusable presets through one typed variant schema. Tailwind uses CVA. StyleX uses semantic style namespaces, typed lookup tables, and resolvers outside JSX.
 
-Use the smallest complete structure for the component:
+Find it before writing layout. If it does not exist, create it in the shared UI package before building the feature. Do not reproduce the contract with local wrappers and copied Tailwind or StyleX rules.
 
-- A single control such as `Button`, `Input`, `Icon`, or `Badge` uses none of these layers.
-- A small composition that only arranges children may use Layout by itself.
-- A component that needs horizontal limits or container queries uses Constraint and Layout.
-- A component that owns positioning, full width, or vertical rhythm uses all three layers.
+Inspect the component imports and load the matching implementation reference before creating, repairing, or comparing Base:
 
-If the component arranges other components and owns all three responsibilities, use the full structure.
+- Tailwind, `className`, `cn`, or `cva`: read [references/tailwind/base-anatomy.md](references/tailwind/base-anatomy.md).
+- `@stylexjs/stylex`, `stylex.create`, or `stylex.props`: read [references/stylex/base-anatomy.md](references/stylex/base-anatomy.md).
 
-## Give each layer one job
+Do not mix Tailwind and StyleX on one Base element.
 
-| Layer | Owns | Typical classes |
-| --- | --- | --- |
-| Shell | Position, vertical rhythm, full width | `relative`, `fixed`, `w-full`, `py-*`, `my-*`, `h-*` |
-| Constraint | Horizontal size, centering, container root | `mx-auto`, `max-w-*`, `px-*`, `w-full`, `@container` |
-| Layout | Child arrangement and reflow | `grid`, `flex`, `gap-*`, `min-h-0`, `min-w-0`, `@md:*` |
+## Use three physical layers
 
-Keep the ownership strict:
+| Part | Owns |
+| --- | --- |
+| `Base.Shell` | Position, height, vertical rhythm, full-width boundary, overflow |
+| `Base.Constraint` | Horizontal gutter, maximum width, centering, container-query root |
+| `Base.Layout` | Row, column, grid, gap, alignment, container-driven reflow |
 
-- Shell fills its slot with `w-full`. It may establish position and vertical rhythm. It never sets `max-w-*` or another constraining width.
-- Constraint owns horizontal padding, width limits, centering, and `@container`.
-- Layout owns grid, flex, gaps, alignment, and responsive arrangement. Give it `min-h-0 min-w-0` by default so it can shrink when an ancestor bounds either axis.
+Keep ownership strict:
 
-Do not put horizontal constraints on Shell. Do not put vertical rhythm on Constraint or Layout.
+- Shell never constrains horizontal width.
+- Constraint never owns vertical spacing or height.
+- Layout never owns page spacing.
+- Constraint and Layout remain separate rendered elements. A size container cannot query itself.
+- Component reflow uses container queries. Tailwind uses variants such as `@md:`. StyleX uses property conditions such as `@container (min-width: 28rem)`.
+- Use viewport queries only when behavior truly depends on the viewport.
 
-## Use container queries for component reflow
+## Apply the grammar by scope
 
-A container query cannot style the element that declares the container. Constraint must declare `@container`, and its child Layout must consume variants such as `@md:*`.
+- Single controls such as `Button`, `Input`, `Icon`, and `Badge` opt out.
+- Small compositions that only arrange controls use `Base.Layout` or `Base.Layout.Row`. They do not create local flex or grid replacements.
+- Cards, forms, sections, visualizations, templates, and pages use Shell -> Constraint -> Layout.
+- `Base.Page` and `Base.Section` are semantic Shell conveniences. They do not collapse the three-layer structure.
+- Standalone Shell is bounded by default. Section and ordinary Page stay in document flow. Viewport Page opts into the bounded profile.
+- A viewport application shell may place `Base.Layout` directly under `Base.Page` when the viewport itself is the horizontal bound. Use only the documented split-pane pattern.
 
-Use viewport variants only when behavior truly depends on the viewport. A reusable component should normally reflow from its available container width.
+The grammar is mandatory. Do not treat these parts as a menu for inventing another layout structure.
 
-## Build a full component
+## Use the shared component
 
 ```tsx
-function StatsPanel({ className, children, ...props }: React.ComponentProps<'section'>) {
+function StatsPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section
-      {...props}
-      className={cn('relative w-full py-12', className)}
-      data-slot="stats-panel"
-    >
-      <div
-        className="mx-auto w-full max-w-5xl px-4 @container"
-        data-slot="stats-panel-constraint"
-      >
-        <div
-          className={cn([
-            // Layout
-            'grid min-h-0 min-w-0 grid-cols-1 gap-4',
-            // Responsive
-            '@md:grid-cols-2 @4xl:grid-cols-4',
-          ])}
-          data-slot="stats-panel-grid"
-        >
+    <Base.Section>
+      <Base.Constraint width="5xl">
+        <Base.Layout gap="md" variant="grid">
           {children}
-        </div>
-      </div>
-    </section>
-  );
+        </Base.Layout>
+      </Base.Constraint>
+    </Base.Section>
+  )
 }
 ```
 
-Merge the consumer `className` into Shell because Shell is the component root. Spread consumer props before the attributes the component owns.
+`Base.Section` owns full width and vertical spacing. `Base.Constraint` owns horizontal size and opens the query container. `Base.Layout` arranges children. The matching framework reference adds container-driven columns without changing this structure.
 
-The same component can render four columns in a wide band and one column in a sidebar. Its container variants respond to Constraint, so placement does not require another prop or breakpoint.
+The same component must reflow in a wide band, narrow sidebar, or modal without placement props or a second component.
 
-## Name nested containers
+Read the matching examples before implementing a page, section, toolbar, responsive panel, or split-pane application:
 
-An unnamed container variant targets the nearest container. Name Constraint when nested components make that ambiguous:
+- [Tailwind examples](references/tailwind/examples.md)
+- [StyleX examples](references/stylex/examples.md)
 
-```tsx
-<div className="@container/panel">
-  <div className="grid grid-cols-1 @md/panel:grid-cols-2">...</div>
-</div>
-```
+## Handle layout failures mechanically
 
-Name only the containers that need explicit targeting.
+Read the matching edge-case reference when height, overflow, scrolling, nested containers, portals, or mobile viewport behavior is involved:
 
-## Keep bounded tracks shrinkable
+- [Tailwind edge cases](references/tailwind/edge-cases.md)
+- [StyleX edge cases](references/stylex/edge-cases.md)
 
-Flex and grid items default to `min-height: auto` and `min-width: auto`. Those defaults can make a track expand with its content instead of respecting a bound.
+Inspect the rendered elements in order: Shell, Constraint, Layout. Verify the owner of the failing axis, the actual container width, and the variant that should respond. Do not patch a mobile failure with unrelated width, height, or viewport rules.
 
-Add shrink overrides where the bounded layout needs them:
+## Finish the work
 
-| Element | Add |
-| --- | --- |
-| Layout | `min-h-0 min-w-0` by default |
-| Shell used as a bounded flex or grid cell | `min-h-0` or `min-w-0` for the bounded axis |
-| A child that must shrink inside Layout | `min-h-0` or `min-w-0` for the bounded axis |
-
-These classes affect shrink behavior only when an ancestor caps the available size. An unconstrained layout still grows with its content.
-
-## Put vertical scrolling on Shell
-
-Shell owns the vertical axis, so place `overflow-y-auto` there. A working scroll region needs all of these conditions:
-
-1. An ancestor sets a real height through `h-screen`, a fixed parent with `h-full`, or a bounded grid or flex track.
-2. The scrolling Shell can shrink within that track. Add `min-h-0` when Shell is the grid or flex cell.
-3. Constraint and Layout inside the scrolling Shell keep their natural height. Do not add `h-full` to them.
-4. The scrolling Shell does not also set `overflow-hidden`.
-
-```tsx
-<main className="h-screen overflow-hidden">
-  <div className="grid h-full min-h-0 grid-cols-[1fr_auto]">
-    <section className="min-h-0 overflow-y-auto">
-      <div className="mx-auto w-full max-w-5xl px-4 @container">
-        <div className="grid min-h-0 min-w-0 gap-4 @md:grid-cols-2">
-          {/* Natural-height content scrolls when it exceeds the track. */}
-        </div>
-      </div>
-    </section>
-  </div>
-</main>
-```
-
-## Check the result
-
-- Use only the layers whose responsibilities the component owns.
-- Keep Shell full width and free of horizontal constraints.
-- Keep horizontal sizing and `@container` on Constraint.
-- Keep arrangement and container variants on Layout.
-- Keep single controls out of the layout grammar.
-- Add shrink overrides only at bounded flex and grid tracks.
-- Keep descendants of a scrolling Shell at natural height.
+- The shared Base family exists and the feature uses it.
+- Each layer owns only its assigned axis.
+- Qualifying components render all three physical layers.
+- Constraint establishes size containment; Layout consumes the framework's container query.
+- Consumer props are spread first. Base applies its resolved styling and controlled `data-slot` afterward.
+- Polymorphic render elements are bare semantic replacements with no styling or `data-slot` of their own.
+- No local wrapper recreates Base behavior.
+- Check narrow and wide container widths when a browser preview is available. Do not add layout tests by default.

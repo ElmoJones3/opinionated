@@ -1,0 +1,6 @@
+interface:
+  display_name: "SOPS Audit"
+  short_description: "Check SOPS file names and commands for mistakes"
+  default_prompt: "Use $sops-audit to check this repository's SOPS file names and commands."
+policy:
+  allow_implicit_invocation: false

@@ -13,7 +13,9 @@ Audit the requested component without editing it unless the user also asks for f
 
 Load these skills before reviewing:
 
-- `ui-tailwind-class-groups`
+- `ui-component-composition`
+- `ui-component-style-groups`
+- `ui-component-variants`
 - `ui-component-prop-contracts`
 - `ui-compound-components`
 - `ui-component-layout`

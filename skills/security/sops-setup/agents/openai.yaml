@@ -1,0 +1,6 @@
+interface:
+  display_name: "SOPS Setup"
+  short_description: "Add SOPS file handling to a repository"
+  default_prompt: "Use $sops-setup to add SOPS file handling and tests to this repository."
+policy:
+  allow_implicit_invocation: true

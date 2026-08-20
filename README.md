@@ -78,6 +78,12 @@ The skills use the open [Agent Skills](https://agentskills.io/) format. The same
 
 The remix already has opinions. A fake architectural "fork" becomes a short list of options and a direct request for the decision. "Load-bearing" is gone in favor of naming the real dependency. More irritations will earn rules as they reveal themselves.
 
+### ui
+
+[`skills/ui`](skills/ui) is the React component lexicon I kept rebuilding in private repositories. It now has one home. The skills separate component boundaries, layout responsibilities, style grouping, visual variants, prop ownership, and compound APIs so each rule can trigger without dragging the whole handbook into context.
+
+`ui-component-review` is the explicit audit pass. The authoring skills load on the work they govern; the reviewer checks all applicable rules together when asked.
+
 ## Install the skills
 
 There are two ways in. Use the Skills CLI when you want ordinary files in a project. Clone the repository when you want to edit the skills here and have those edits go live on your machine. Installing the same skill both ways can leave your agent with duplicate names.
@@ -90,7 +96,7 @@ Run this inside the project that should receive the skills:
 npx skills@latest add ElmoJones3/opinionated
 ```
 
-The installer finds `bruh` and `unslop`, then asks which skills and coding agents you want. It copies the selected files into the project and records their source in `skills-lock.json`. Pull later changes when you choose:
+The installer finds every skill in the repository, then asks which skills and coding agents you want. It copies the selected files into the project and records their source in `skills-lock.json`. Pull later changes when you choose:
 
 ```bash
 npx skills update

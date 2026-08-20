@@ -1,61 +1,52 @@
 ---
 name: ui-component-prop-contracts
-description: Protect owned props in React component wrappers while preserving consumer props. Use when a component spreads props and controls className, data-slot, handlers, or other attributes.
+description: Spread consumer props first, then apply component-owned behavior. Mandatory when a React component forwards props.
 user-invocable: false
 ---
 
-# Protect component prop contracts
+# Spread props first
 
-Decide which props the component owns. Spread consumer props first, then set owned attributes so callers cannot replace them by accident.
+A component owns the behavior and structural attributes it defines. Spread consumer props first. Apply merged and controlled props after.
 
-Destructure every value the component merges or controls. Always destructure `className` when the component supplies classes of its own.
+## Prevent careless overrides
 
-## Spread first
-
-Do not let a trailing spread replace `data-slot`, merged classes, or another owned attribute:
+A trailing spread lets the caller replace the component's classes, structural markers, and controlled behavior:
 
 ```tsx
-<InputPrimitive data-slot="input" className={cn(componentClasses, className)} {...props} />
+<InputPrimitive
+  className={cn(componentClasses, className)}
+  data-slot="input"
+  {...props}
+/>
 ```
 
-Place the spread first and the contract after it:
+Destructure anything the component merges or controls, then spread the rest first:
 
 ```tsx
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
+function Input({ className, ...props }: React.ComponentProps<'input'>) {
   return (
     <InputPrimitive
       {...props}
       className={cn(componentClasses, className)}
       data-slot="input"
-      type={type}
     />
-  );
+  )
 }
 ```
 
-This keeps unowned props such as `id`, `aria-*`, and event handlers available to the caller. It merges caller classes through `cn` and keeps `data-slot` stable for selectors.
-
-## Own props deliberately
-
-Do not place an attribute after the spread unless the component truly owns it. A wrapper should preserve normal element behavior unless its API says otherwise.
-
-Use these rules:
-
 - Merge extensible values such as `className`.
-- Set structural markers such as `data-slot` after the spread.
-- Reapply a destructured prop when the wrapper needs it in an explicit position.
+- Set component-owned attributes after the spread.
 - Leave ordinary consumer props in the spread.
+- Every prop after the spread must be intentionally merged or owned.
 
-## Compose handlers
+## Compose shared handlers
 
-Prop order cannot compose two handlers. When both the wrapper and the caller must receive an event, use the component library's prop merger. Base UI provides `mergeProps` and `render` for this case.
+Prop order can only choose one handler. When the component and consumer both need an event, use the component library's prop merger. Base UI provides `mergeProps` and `render`.
 
-Do not silently replace the caller's handler. Do not call both handlers by hand when the library already defines ordering and cancellation behavior.
+Do not replace the consumer's handler or recreate ordering and cancellation rules by hand.
 
 ## Check the result
 
-- Spread remaining consumer props before owned attributes.
-- Merge `className` instead of replacing it.
-- Keep structural markers stable.
-- Confirm every attribute after the spread belongs to the component contract.
-- Use library-supported composition when internal and consumer handlers must both run.
+- The consumer spread comes first.
+- Merged and component-owned props come after.
+- Shared handlers use the library's composition mechanism.

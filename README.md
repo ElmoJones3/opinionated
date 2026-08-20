@@ -64,33 +64,22 @@ This repository does not contain secrets. The tools are part of my baseline beca
 
 ## Agent skills
 
-This is where the repository will grow.
+The repository currently has 19 skills in four categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
-The skills use the open [Agent Skills](https://agentskills.io/) format. The same source directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests provide packaging without splitting the actual instructions into separate copies.
+The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
-### bruh
+| Category | Skills | What they govern |
+| --- | ---: | --- |
+| [Communication](skills/communication/README.md) | 3 | Plain language, human voice, and respect for user authority. |
+| [Engineering](skills/engineering/README.md) | 4 | Domain behavior, pure transformations, project terminology, and decision records. |
+| [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
+| [UI](skills/ui/README.md) | 8 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, and state. |
 
-[`bruh`](skills/communication/bruh/SKILL.md) restates the last response in plain language. It began as Lauren Tan's wonderfully direct `bro` skill. I renamed it to match the man invoking it. It runs only when called.
-
-### unslop
-
-[`unslop`](skills/communication/unslop/SKILL.md) removes AI tells and puts a human voice back into the answer. Lauren's original is excellent, so this copy keeps most of her rule set and gives her credit.
-
-The remix already has opinions. A fake architectural "fork" becomes a short list of options and a direct request for the decision. "Load-bearing" is gone in favor of naming the real dependency. More irritations will earn rules as they reveal themselves.
-
-### stay in your lane
-
-[`stay-in-your-lane`](skills/communication/stay-in-your-lane/SKILL.md) keeps the agent inside the authority it was given. The user owns scope, priorities, pace, and purpose. The agent executes, reports concrete blockers, and saves opinions for when they are requested. YAGNI does not overrule explicit scope, and an agent never tells the user when to stop working.
-
-### ui
-
-[`skills/ui`](skills/ui) is the React component lexicon I kept rebuilding in private repositories. It now has one home. The skills separate component boundaries, layout responsibilities, style grouping, visual variants, prop ownership, and compound APIs so each rule can trigger without dragging the whole handbook into context.
-
-`ui-component-review` is the explicit audit pass. The authoring skills load on the work they govern; the reviewer checks all applicable rules together when asked.
+Some rules are mandatory whenever their subject appears. Explicit review skills run only when asked. The frontmatter says which is which; the prose does not get to quietly weaken it.
 
 ## Install the skills
 
-There are two ways in. Use the Skills CLI when you want ordinary files in a project. Clone the repository when you want to edit the skills here and have those edits go live on your machine. Installing the same skill both ways can leave your agent with duplicate names.
+There are two ways in. Use the Skills CLI for a managed project install. Clone the repository when you want edits here to go live on your machine. Installing the same skill both ways can leave your agent with duplicate names.
 
 ### Codex, Claude Code, and other agents
 
@@ -100,11 +89,13 @@ Run this inside the project that should receive the skills:
 npx skills@latest add ElmoJones3/opinionated
 ```
 
-The installer finds every skill in the repository, then asks which skills and coding agents you want. It copies the selected files into the project and records their source in `skills-lock.json`. Pull later changes when you choose:
+The installer finds every skill in the repository, then asks which skills and coding agents you want. It installs the selection and records its source in `skills-lock.json`. Refresh installed skills when you choose:
 
 ```bash
 npx skills update
 ```
+
+`update` refreshes skills already recorded in the lock file. Rerun `add` when this repository gains a new skill that you also want installed.
 
 ### Work on the skills themselves
 
@@ -124,7 +115,7 @@ Codex reads the links from `~/.agents/skills`. Add Claude Code with:
 
 The installer refuses to overwrite a skill it does not manage. Because the installed skills are symlinks, edits in this checkout are live. Rerun the installer after adding another skill so the new directory gets linked too.
 
-The repository also includes `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json` for packaged distribution. Autocomplete handles the plugin namespace.
+The repository also includes `.codex-plugin/plugin.json` for the plugin directory shared by ChatGPT and Codex, plus `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` for Claude Code.
 
 Claude Code can install the whole collection as a namespaced plugin:
 
@@ -144,15 +135,18 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `cfg/zshrc` | Shared shell configuration and aliases. |
 | `cfg/git.sh` | Git identity, SSH key setup, and commit signing. |
 | `cfg/setup.sh` | The macOS rebuild sequence. |
-| `skills/` | Canonical, agent-neutral skill instructions. |
+| `skills/communication/` | Rules for language, voice, and agent authority. |
+| `skills/engineering/` | Rules for domain code, value transformations, terminology, and ADRs. |
+| `skills/security/` | SOPS setup, synchronization, naming, and audit rules. |
+| `skills/ui/` | React component authoring rules and the explicit review pass. |
 | `skills/**/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
-| `.codex-plugin/` | Codex and ChatGPT plugin metadata. |
+| `.codex-plugin/` | Shared ChatGPT and Codex plugin metadata. |
 | `.claude-plugin/` | Claude Code plugin and marketplace metadata. |
 | `install.sh` | Personal skill installation through live symlinks. |
 
 ## Add a skill
 
-Each skill lives below `skills/` in a directory containing `SKILL.md`. Keep the main instructions agent-neutral. Put host metadata under `agents/`, preserve upstream licenses, and say where remixed work came from.
+Each skill lives in one of the four category directories and contains `SKILL.md`. Keep the main instructions agent-neutral. Put OpenAI presentation metadata under `agents/`, preserve upstream licenses, and say where remixed work came from. Update the category README when the skill changes what that category claims to cover.
 
 Add the skill directory to the `skills` array in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). Claude needs explicit paths because this repository groups some skills into category directories.
 

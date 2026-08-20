@@ -2,20 +2,20 @@
 
 This directory is the house React component model. It is intentionally prescriptive. The point is to stop agents from inventing a new component grammar every time they touch a screen.
 
-Seven passive skills activate when their descriptions match the work. One user-invoked skill runs the full audit when asked.
+Seven authoring skills activate when their descriptions match the work. One explicit skill runs the full audit when asked.
 
 ## The skills
 
-| Skill | Invocation | What it owns |
+| Skill | Trigger | What it owns |
 | --- | --- | --- |
-| [`ui-component-composition`](ui-component-composition/SKILL.md) | Passive | Decides whether interface markup belongs in one component or several. |
-| [`ui-component-layout`](ui-component-layout/SKILL.md) | Passive | Requires the shared Shell -> Constraint -> Layout grammar and container-driven reflow. |
-| [`ui-component-prop-contracts`](ui-component-prop-contracts/SKILL.md) | Passive | Spreads consumer props first, then applies behavior and attributes owned by the component. |
-| [`ui-component-style-groups`](ui-component-style-groups/SKILL.md) | Passive | Groups component-local Tailwind, StyleX, and Motion decisions by named visual concern. |
-| [`ui-component-variants`](ui-component-variants/SKILL.md) | Passive | Moves prop-selected and state-selected visuals into typed CVA recipes or StyleX resolvers. |
-| [`ui-compound-components`](ui-compound-components/SKILL.md) | Passive | Exports interdependent component parts through one discoverable root API. |
-| [`ui-principle-state-management`](ui-principle-state-management/SKILL.md) | Passive | Chooses the rightful state owner, then uses RxJS, an Immer reducer, or a named Immer producer with direct tests. |
-| [`ui-component-review`](ui-component-review/SKILL.md) | User invoked | Loads every rule above and reports concrete violations without editing unless fixes were also requested. |
+| [`ui-component-composition`](ui-component-composition/SKILL.md) | Automatic | Decides whether interface markup belongs in one component or several. |
+| [`ui-component-layout`](ui-component-layout/SKILL.md) | Automatic | Requires the shared Shell -> Constraint -> Layout grammar and container-driven reflow. |
+| [`ui-component-prop-contracts`](ui-component-prop-contracts/SKILL.md) | Automatic | Spreads consumer props first, then applies behavior and attributes owned by the component. |
+| [`ui-component-style-groups`](ui-component-style-groups/SKILL.md) | Automatic | Groups component-local Tailwind, StyleX, and Motion decisions by named visual concern. |
+| [`ui-component-variants`](ui-component-variants/SKILL.md) | Automatic | Moves prop-selected and state-selected visuals into typed CVA recipes or StyleX resolvers. |
+| [`ui-compound-components`](ui-compound-components/SKILL.md) | Automatic | Exports interdependent component parts through one discoverable root API. |
+| [`ui-principle-state-management`](ui-principle-state-management/SKILL.md) | Automatic | Chooses the rightful state owner, then uses RxJS, an Immer reducer, or a named Immer producer with direct tests. |
+| [`ui-component-review`](ui-component-review/SKILL.md) | Explicit only | Loads every rule above and reports concrete violations without editing unless fixes were also requested. |
 
 ## Where the boundaries sit
 
@@ -35,7 +35,7 @@ Most UI drift begins with a locally reasonable shortcut: another wrapper, a trai
 
 The shared `Base` family gives pages and layout-bearing components the same owners for width, vertical rhythm, arrangement, and scroll. Container queries let the component respond to its slot instead of guessing the viewport or asking for `sidebar` and `modal` props.
 
-Named variants make visual state finite and typed. Labeled style groups keep long declarations reviewable without changing the styling system's merge rules. Compound exports accept less per-part tree shaking in exchange for one import and autocomplete that reveals the whole control.
+Named variants make visual state finite and typed. Labeled style groups keep long declarations reviewable without changing the styling system's merge rules. Compound exports give up reliable per-part tree shaking in exchange for one import and autocomplete that reveals the whole control.
 
 State follows the same ownership rule. Query, router, and form libraries keep the state they already manage. Application-owned behavior uses RxJS for streams, an Immer reducer for finite transitions, and plain Immer for the small remainder. Direct state tests prove behavior without pretending a synthetic click is the behavior.
 

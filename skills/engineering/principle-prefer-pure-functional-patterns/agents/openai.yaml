@@ -1,0 +1,6 @@
+interface:
+  display_name: "Prefer Pure Functional Patterns"
+  short_description: "Prefer testable value transformations"
+  default_prompt: "Use $principle-prefer-pure-functional-patterns to make this logic explicit, composable, and directly testable."
+policy:
+  allow_implicit_invocation: true

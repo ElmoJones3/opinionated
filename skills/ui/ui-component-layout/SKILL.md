@@ -19,6 +19,8 @@ Inspect the component imports and load the matching implementation reference bef
 
 Do not mix Tailwind and StyleX on one Base element.
 
+Creating or changing Base also triggers `ui-component-variants`, `ui-component-style-groups`, `ui-component-prop-contracts`, and `ui-compound-components`. This skill owns the three-layer layout contract. Those skills own variant selection, declaration structure, forwarded props, and the public family.
+
 ## Use three physical layers
 
 | Part | Owns |

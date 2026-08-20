@@ -17,7 +17,10 @@ type ButtonStyleOptions = {
   status: Status
 }
 
-type ButtonProps = Omit<React.ComponentProps<'button'>, 'style'> & {
+type ButtonProps = Omit<
+  React.ComponentProps<'button'>,
+  'className' | 'style'
+> & {
   size?: Size
   status?: Status
   style?: StyleXStyles

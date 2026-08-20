@@ -8,6 +8,8 @@ user-invocable: false
 
 Treat one control as one public API, even when its implementation has several parts. Consumers import the root once and discover every part from it.
 
+`ui-component-composition` decides whether the parts belong to one control. This skill owns the public export after that boundary is clear. Apply `ui-component-prop-contracts` to every part that forwards consumer props.
+
 ## Recognize a component family
 
 A component family shares state, context, behavior, or structure that makes its parts meaningful together.

@@ -19,6 +19,7 @@ Load these skills before reviewing:
 - `ui-component-prop-contracts`
 - `ui-compound-components`
 - `ui-component-layout`
+- `ui-principle-state-management`
 
 Report any missing skill. Do not recreate a missing rule from memory.
 

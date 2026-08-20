@@ -1,6 +1,6 @@
 ---
 name: ui-component-composition
-description: Set UI component boundaries by responsibility and composition. Mandatory when splitting or combining interface parts.
+description: Choose React component boundaries by responsibility. Mandatory when deciding whether UI markup belongs in one component or several.
 user-invocable: false
 ---
 
@@ -72,7 +72,10 @@ function DashboardPage() {
 
 - Load `ui-component-layout` when the component arranges children or owns responsive layout.
 - Load `ui-compound-components` when consumers combine interdependent parts to build one control.
-- Apply the style, variant, and prop-contract skills independently when their triggers match.
+- Load `ui-component-style-groups` when creating, changing, or reviewing component visuals.
+- Load `ui-component-variants` when props or derived state select classes or style objects.
+- Load `ui-component-prop-contracts` when the component forwards consumer props.
+- Load `ui-principle-state-management` when the component owns interactive behavior, derives state, consumes ongoing events, or coordinates animation.
 
 ## Check the boundaries
 

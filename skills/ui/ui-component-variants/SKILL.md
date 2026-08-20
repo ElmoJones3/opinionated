@@ -1,6 +1,6 @@
 ---
 name: ui-component-variants
-description: Model visual states and presets as named variants. Mandatory when className or styles depend on props or component state.
+description: Model conditional visual output as named variants. Mandatory when React props or derived state select classes or style objects.
 user-invocable: false
 ---
 
@@ -14,6 +14,8 @@ Turn prop-driven and derived-state styling into one named schema. Do not assembl
 - Read [references/stylex.md](references/stylex.md) when the component uses StyleX.
 
 Apply `ui-component-style-groups` to the declarations inside each variant. Apply `ui-component-prop-contracts` when exposing variant props or controlled semantic attributes.
+
+Apply `ui-principle-state-management` when the component owns the state that selects a variant. This skill maps state to appearance; it does not own behavioral transitions.
 
 ## Model the state
 

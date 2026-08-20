@@ -1,0 +1,6 @@
+interface:
+  display_name: "Semantic Snapshot"
+  short_description: "Capture settled terminology and decisions"
+  default_prompt: "Use $semantic-snapshot to capture the settled terminology and decisions from this conversation."
+policy:
+  allow_implicit_invocation: false

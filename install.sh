@@ -36,7 +36,7 @@ done
 
 link_skills() {
   local target_root="$1"
-  local skill_file skill_dir skill_name target
+  local skill_file skill_dir skill_name target current_target
   local installed=0
 
   mkdir -p "$target_root"
@@ -50,6 +50,17 @@ link_skills() {
       printf 'Already linked: %s\n' "$target"
       installed=$((installed + 1))
       continue
+    fi
+
+    if [[ -L "$target" ]]; then
+      current_target="$(readlink "$target")"
+
+      if [[ "$current_target" == "$repo_dir/skills/"* ]]; then
+        ln -sfn "$skill_dir" "$target"
+        printf 'Relinked %s -> %s\n' "$target" "$skill_dir"
+        installed=$((installed + 1))
+        continue
+      fi
     fi
 
     if [[ -e "$target" || -L "$target" ]]; then

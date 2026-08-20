@@ -19,7 +19,7 @@
   ],
   "skills": [
     "./skills/bruh/",
-    "./skills/productivity/domain-modeling/",
+    "./skills/engineering/domain-modeling/",
     "./skills/productivity/semantic-mapping/",
     "./skills/productivity/semantic-snapshot/",
     "./skills/security/sops-audit/",

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Domain Modeling"
+  short_description: "Make domain objects own their behavior"
+  default_prompt: "Use $domain-modeling to model this behavior as a contract owned by the domain object."
+policy:
+  allow_implicit_invocation: true

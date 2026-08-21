@@ -1,0 +1,6 @@
+interface:
+  display_name: "Test Execution"
+  short_description: "Prove the intended tests actually executed"
+  default_prompt: "Use $principle-test-execution to verify that the intended suite actually ran."
+policy:
+  allow_implicit_invocation: true

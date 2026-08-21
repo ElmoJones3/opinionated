@@ -1,0 +1,6 @@
+interface:
+  display_name: "Test Boundaries"
+  short_description: "Choose the narrowest faithful test boundary"
+  default_prompt: "Use $principle-test-boundaries to choose the narrowest test that preserves this contract."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Semantic Mapping"
+  short_description: "Keep project terminology consistent"
+  default_prompt: "Use $semantic-mapping to update this project's semantic terms and boundary map."
+policy:
+  allow_implicit_invocation: true

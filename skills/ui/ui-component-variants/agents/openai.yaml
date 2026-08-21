@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Variants"
+  short_description: "Model conditional visuals as typed variants"
+  default_prompt: "Use $ui-component-variants to replace conditional styling with named variants."
+policy:
+  allow_implicit_invocation: true

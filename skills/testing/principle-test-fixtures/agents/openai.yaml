@@ -1,0 +1,6 @@
+interface:
+  display_name: "Honest Test Fixtures"
+  short_description: "Build test states production can actually reach"
+  default_prompt: "Use $principle-test-fixtures to make these test fixtures production-reachable and specific."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Prop Contracts"
+  short_description: "Spread consumer props before owned behavior"
+  default_prompt: "Use $ui-component-prop-contracts to preserve this wrapper's behavior while forwarding props."
+policy:
+  allow_implicit_invocation: true

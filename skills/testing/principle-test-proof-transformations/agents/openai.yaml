@@ -1,0 +1,6 @@
+interface:
+  display_name: "Transformation Proofs"
+  short_description: "Prove exact outputs, ordering, and non-mutation"
+  default_prompt: "Use $principle-test-proof-transformations to prove this transformation's complete contract."
+policy:
+  allow_implicit_invocation: true

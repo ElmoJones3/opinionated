@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stay in Your Lane"
+  short_description: "Keep agents inside user-defined authority"
+  default_prompt: "Use $stay-in-your-lane to execute this request without changing its scope or offering unsolicited advice."

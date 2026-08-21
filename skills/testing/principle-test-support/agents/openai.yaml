@@ -1,0 +1,6 @@
+interface:
+  display_name: "Test Support"
+  short_description: "Share test machinery without hiding the proof"
+  default_prompt: "Use $principle-test-support to extract reusable test support while keeping each claim visible."
+policy:
+  allow_implicit_invocation: true

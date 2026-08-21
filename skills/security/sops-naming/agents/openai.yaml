@@ -1,0 +1,6 @@
+interface:
+  display_name: "SOPS Naming"
+  short_description: "Name secret files and encrypted Git copies"
+  default_prompt: "Use $sops-naming to name the secret files and encrypted copies in this repository."
+policy:
+  allow_implicit_invocation: true

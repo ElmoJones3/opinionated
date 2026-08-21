@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI State Management"
+  short_description: "Choose and test the right React state model"
+  default_prompt: "Use $ui-principle-state-management to choose and test the state model for this React component."

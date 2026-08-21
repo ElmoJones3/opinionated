@@ -1,0 +1,6 @@
+interface:
+  display_name: "Failure Proofs"
+  short_description: "Pin exact rejections, rollback, and preserved state"
+  default_prompt: "Use $principle-test-proof-failures to prove this exact failure and its state guarantees."
+policy:
+  allow_implicit_invocation: true

@@ -1,16 +1,54 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "opinionated",
+  "displayName": "Opinionated",
   "description": "Opinionated agent skills for clearer, more human work.",
   "version": "0.1.0",
   "author": {
     "name": "Stanley Fich",
-    "email": "sf@jadeiq.com"
+    "email": "sf@jadeiq.com",
+    "url": "https://github.com/ElmoJones3"
   },
   "homepage": "https://github.com/ElmoJones3/opinionated",
   "repository": "https://github.com/ElmoJones3/opinionated",
   "license": "MIT",
   "keywords": [
     "agent-skills",
+    "claude-code",
     "writing"
+  ],
+  "skills": [
+    "./skills/communication/bruh/",
+    "./skills/communication/stay-in-your-lane/",
+    "./skills/communication/unslop/",
+    "./skills/engineering/domain-modeling/",
+    "./skills/engineering/principle-prefer-pure-functional-patterns/",
+    "./skills/engineering/semantic-mapping/",
+    "./skills/engineering/semantic-snapshot/",
+    "./skills/productivity/mind-merge/",
+    "./skills/security/sops-audit/",
+    "./skills/security/sops-naming/",
+    "./skills/security/sops-setup/",
+    "./skills/security/sops-sync/",
+    "./skills/testing/principle-test-boundaries/",
+    "./skills/testing/principle-test-characterization/",
+    "./skills/testing/principle-test-determinism/",
+    "./skills/testing/principle-test-execution/",
+    "./skills/testing/principle-test-fixtures/",
+    "./skills/testing/principle-test-proof-derived-results/",
+    "./skills/testing/principle-test-proof-failures/",
+    "./skills/testing/principle-test-proof-state-transitions/",
+    "./skills/testing/principle-test-proof-transformations/",
+    "./skills/testing/principle-test-support/",
+    "./skills/testing/principle-test-tdd/",
+    "./skills/testing/principle-testing-guidelines/",
+    "./skills/ui/ui-component-composition/",
+    "./skills/ui/ui-component-layout/",
+    "./skills/ui/ui-component-prop-contracts/",
+    "./skills/ui/ui-component-review/",
+    "./skills/ui/ui-component-style-groups/",
+    "./skills/ui/ui-component-variants/",
+    "./skills/ui/ui-compound-components/",
+    "./skills/ui/ui-principle-state-management/"
   ]
 }

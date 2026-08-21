@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
+  "name": "opinionated",
+  "owner": {
+    "name": "Stanley Fich",
+    "email": "sf@jadeiq.com",
+    "url": "https://github.com/ElmoJones3"
+  },
+  "description": "Install Opinionated skills as a Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "opinionated",
+      "source": "./",
+      "description": "Opinionated agent skills for clearer, more human work.",
+      "license": "MIT",
+      "keywords": [
+        "agent-skills",
+        "claude-code",
+        "writing"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Composition"
+  short_description: "Set clear UI component boundaries"
+  default_prompt: "Use $ui-component-composition to decide whether this UI belongs in one component or several."
+policy:
+  allow_implicit_invocation: true

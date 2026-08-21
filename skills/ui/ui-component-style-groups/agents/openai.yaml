@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Style Groups"
+  short_description: "Group component styling by visual concern"
+  default_prompt: "Use $ui-component-style-groups to organize the styling decisions in this component."
+policy:
+  allow_implicit_invocation: true

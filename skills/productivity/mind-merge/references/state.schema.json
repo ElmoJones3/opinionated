@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ElmoJones3/opinionated/skills/productivity/mind-merge/state.schema.json",
+  "title": "Mind Merge session state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "context",
+    "initialQuestionIds",
+    "questions",
+    "decisions",
+    "evidence",
+    "provenanceEdges",
+    "questionDependencies",
+    "phases",
+    "headPhaseId"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "context": { "$ref": "#/$defs/context" },
+    "initialQuestionIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/question" }
+    },
+    "decisions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/decision" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "provenanceEdges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/provenanceEdge" }
+    },
+    "questionDependencies": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/questionDependency" }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/phase" }
+    },
+    "headPhaseId": { "$ref": "#/$defs/id" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger", "subject", "startedAt", "git"],
+      "properties": {
+        "trigger": { "$ref": "#/$defs/text" },
+        "subject": { "$ref": "#/$defs/text" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "git": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["branch", "user"],
+          "properties": {
+            "branch": { "$ref": "#/$defs/text" },
+            "user": { "$ref": "#/$defs/text" }
+          }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "prompt", "openedInPhaseId", "metadata"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "prompt": { "$ref": "#/$defs/text" },
+        "openedInPhaseId": { "$ref": "#/$defs/id" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "statement",
+        "acceptedAt",
+        "acceptedBy",
+        "phaseId",
+        "metadata"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "statement": { "$ref": "#/$defs/text" },
+        "rationale": { "$ref": "#/$defs/text" },
+        "acceptedAt": { "type": "string", "format": "date-time" },
+        "acceptedBy": { "$ref": "#/$defs/text" },
+        "phaseId": { "$ref": "#/$defs/id" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "summary", "observedAt", "phaseId", "metadata"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "summary": { "$ref": "#/$defs/text" },
+        "source": { "$ref": "#/$defs/text" },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "phaseId": { "$ref": "#/$defs/id" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    },
+    "provenanceEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "decisionId",
+        "questionId",
+        "type",
+        "evidenceIds",
+        "supersedesEdgeId",
+        "phaseId",
+        "metadata"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "decisionId": { "$ref": "#/$defs/id" },
+        "questionId": { "$ref": "#/$defs/id" },
+        "type": {
+          "enum": ["raises", "resolves", "supersedes", "reopens", "retracts"]
+        },
+        "evidenceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "rationale": { "$ref": "#/$defs/text" },
+        "supersedesEdgeId": {
+          "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }]
+        },
+        "phaseId": { "$ref": "#/$defs/id" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    },
+    "questionDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "prerequisiteQuestionId",
+        "dependentQuestionId",
+        "createdInPhaseId",
+        "metadata"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "prerequisiteQuestionId": { "$ref": "#/$defs/id" },
+        "dependentQuestionId": { "$ref": "#/$defs/id" },
+        "createdInPhaseId": { "$ref": "#/$defs/id" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    },
+    "added": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionIds",
+        "decisionIds",
+        "evidenceIds",
+        "provenanceEdgeIds",
+        "questionDependencyIds"
+      ],
+      "properties": {
+        "questionIds": { "$ref": "#/$defs/idList" },
+        "decisionIds": { "$ref": "#/$defs/idList" },
+        "evidenceIds": { "$ref": "#/$defs/idList" },
+        "provenanceEdgeIds": { "$ref": "#/$defs/idList" },
+        "questionDependencyIds": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "idList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "parentPhaseId",
+        "capturedAt",
+        "capturedBy",
+        "summary",
+        "nextQuestionId",
+        "status",
+        "added",
+        "metadata"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "parentPhaseId": {
+          "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }]
+        },
+        "capturedAt": { "type": "string", "format": "date-time" },
+        "capturedBy": { "$ref": "#/$defs/text" },
+        "summary": { "$ref": "#/$defs/text" },
+        "nextQuestionId": {
+          "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }]
+        },
+        "status": { "enum": ["active", "closed"] },
+        "added": { "$ref": "#/$defs/added" },
+        "metadata": { "$ref": "#/$defs/metadata" }
+      }
+    }
+  }
+}
+

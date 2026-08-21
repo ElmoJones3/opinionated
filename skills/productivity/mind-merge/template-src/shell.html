@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Mind Merge · __RENDERER_NAME__</title>
+    <style>__APP_CSS__</style>
+  </head>
+  <body data-mind-merge-renderer="__RENDERER_ID__">
+    <header class="hero">
+      <div class="hero__eyebrow">Mind Merge · __RENDERER_NAME__</div>
+      <h1 id="subject">Load a session to begin</h1>
+      <div class="next-question">
+        <span>Question at the frontier</span>
+        <strong id="next-question">No session loaded</strong>
+      </div>
+      <div class="loader">
+        <label class="file-button" for="state-file">Open state.json or state.yaml</label>
+        <input id="state-file" type="file" accept=".json,.yaml,.yml,application/json,application/yaml">
+        <span id="load-status" role="status">Looking for sibling state.json or state.yaml…</span>
+      </div>
+    </header>
+
+    <main class="worksheet">
+      <section id="context" class="panel" aria-labelledby="context-heading">
+        <div class="section-number">01</div>
+        <div>
+          <h2 id="context-heading">Context</h2>
+          <div id="context-content" class="context-grid empty-state">No session loaded.</div>
+        </div>
+      </section>
+
+      <section id="initial-questions" class="panel" aria-labelledby="questions-heading">
+        <div class="section-number">02</div>
+        <div>
+          <h2 id="questions-heading">Initial open questions</h2>
+          <div id="initial-questions-content" class="card-grid empty-state">No session loaded.</div>
+        </div>
+      </section>
+
+      <section id="decision-graph" class="panel panel--graph" aria-labelledby="graph-heading">
+        <div class="section-number">03</div>
+        <div>
+          <h2 id="graph-heading">Decision graph</h2>
+          <p class="section-note">Questions and Decisions remain separate. Provenance lives on the edges.</p>
+          <div id="decision-graph-content" class="graph-host empty-state">No session loaded.</div>
+        </div>
+      </section>
+
+      <section id="decision-answers" class="panel" aria-labelledby="answers-heading">
+        <div class="section-number">04</div>
+        <div>
+          <h2 id="answers-heading">Answers per decision</h2>
+          <div id="decision-answers-content" class="card-grid empty-state">No accepted Decisions yet.</div>
+        </div>
+      </section>
+
+      <section id="phase-tree" class="panel" aria-labelledby="phases-heading">
+        <div class="section-number">05</div>
+        <div>
+          <h2 id="phases-heading">Phase tree</h2>
+          <p class="section-note">Each capture records what appeared, changed, and became the next question.</p>
+          <div id="phase-tree-content" class="phase-list empty-state">No session loaded.</div>
+        </div>
+      </section>
+    </main>
+
+    <div id="problems" class="problems" role="alert" hidden></div>
+    <script id="mind-merge-state" type="application/json">null</script>
+    <script>__APP_JS__</script>
+  </body>
+</html>
+

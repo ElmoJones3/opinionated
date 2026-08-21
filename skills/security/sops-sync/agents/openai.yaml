@@ -1,0 +1,6 @@
+interface:
+  display_name: "SOPS Sync"
+  short_description: "Sync local secrets with encrypted Git copies"
+  default_prompt: "Use $sops-sync to add safe encrypt and decrypt commands to this repository."
+policy:
+  allow_implicit_invocation: true

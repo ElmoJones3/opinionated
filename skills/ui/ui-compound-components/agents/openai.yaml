@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Compound Components"
+  short_description: "Export interdependent components as one API"
+  default_prompt: "Use $ui-compound-components to export this component family through one root API."
+policy:
+  allow_implicit_invocation: true

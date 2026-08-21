@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Component Layout"
+  short_description: "Enforce the shared Base layout grammar"
+  default_prompt: "Use $ui-component-layout to enforce Base.Shell, Base.Constraint, and Base.Layout in this React component."
+policy:
+  allow_implicit_invocation: true

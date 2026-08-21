@@ -1,40 +1,46 @@
 # Go reference
 
-Use this reference when creating or reviewing a Go transformation.
+Use this reference when choosing or implementing a pure Go pattern.
 
-Go makes value-returning functions cheap to describe, but a copied struct may still share slices, maps, or pointers with its input. Purity is an observable contract. Copy referenced storage before changing it.
+## Defaults
 
-## A hidden, stateful operation
+| Operation owes | Use |
+| --- | --- |
+| one calculated value | an ordinary function |
+| a converted value that may be refused | an ordinary `func(T) (U, error)` |
+| reusable constraints | `Rule[T]` plus a fail-fast or accumulating evaluator |
+| state folded from accepted inputs | a total pure reducer |
+| state or an expected refusal | `x.Modifier[T]` and `x.Apply` |
+| a value plus ordered facts with no refusal | `x.Change[U, F]` directly |
+| state plus ordered facts or a receipt | `x.EmittingModifier[T, F]` and `x.ApplyEmitting` |
+| values over time | a stateful shell around a pure reducer |
 
-This version mixes calculation, ambient time, mutation, and persistence. Tests must control global state and inspect a repository just to prove the date calculation.
+Go needs no functional library. Use native `(value, error)` returns. That intentionally erases a generic error parameter in favor of Go's standard error vocabulary; use sentinel or typed domain errors when callers and tests need stable identity.
+
+## Keep effects outside
+
+Bad code mixes ambient inputs, mutation, persistence, and publication:
 
 ```go
 func ScheduleRenewal(change *Renewal) error {
-	change.Plan = defaultPlan
 	change.StartsAt = time.Now().Add(7 * 24 * time.Hour)
 	change.Tags = append(change.Tags, "scheduled")
-	return repository.Save(change)
+	if err := repository.Save(change); err != nil {
+		return err
+	}
+	events <- RenewalScheduled{StartsAt: change.StartsAt}
+	return nil
 }
 ```
 
-## Compose fallible value transformations
+A channel send is an effect. If a later step fails, it cannot be recalled. Read time and external state at the application boundary, then pass plain values into a pure transformation.
 
-Use a modifier pipeline when callers select or reuse an ordered set of transformations. Keep every modifier pure and make failure stop the remaining work.
+## State-only modifiers
+
+Put the shared contract in a leaf utility package:
 
 ```go
-package renewals
-
-import (
-	"fmt"
-	"slices"
-	"time"
-)
-
-type Renewal struct {
-	Plan     string
-	StartsAt time.Time
-	Tags     []string
-}
+package x
 
 type Modifier[T any] func(T) (T, error)
 
@@ -50,60 +56,138 @@ func Apply[T any](initial T, modifiers ...Modifier[T]) (T, error) {
 	}
 	return state, nil
 }
-
-func WithPlan(plan string) Modifier[Renewal] {
-	return func(change Renewal) (Renewal, error) {
-		if plan != "basic" && plan != "pro" {
-			return Renewal{}, fmt.Errorf("unknown plan %q", plan)
-		}
-		change.Plan = plan
-		return change, nil
-	}
-}
-
-func StartingIn(now time.Time, delay time.Duration) Modifier[Renewal] {
-	return func(change Renewal) (Renewal, error) {
-		if delay < 0 {
-			return Renewal{}, fmt.Errorf("renewal delay must not be negative")
-		}
-		change.StartsAt = now.Add(delay)
-		return change, nil
-	}
-}
-
-func WithTag(tag string) Modifier[Renewal] {
-	return func(change Renewal) (Renewal, error) {
-		if tag == "" {
-			return Renewal{}, fmt.Errorf("tag is required")
-		}
-		change.Tags = append(slices.Clone(change.Tags), tag)
-		return change, nil
-	}
-}
 ```
 
-The caller owns the clock and persistence:
+Use it when success owes only the next value:
 
 ```go
-next, err := Apply(
-	current,
-	WithPlan("pro"),
-	StartingIn(now, 7*24*time.Hour),
-	WithTag("scheduled"),
-)
-if err != nil {
-	return err
+func WithTag(tag string) x.Modifier[Renewal] {
+	return func(current Renewal) (Renewal, error) {
+		if tag == "" {
+			return Renewal{}, ErrTagRequired
+		}
+		next := current
+		next.Tags = append(slices.Clone(current.Tags), tag)
+		return next, nil
+	}
 }
-return repository.Save(ctx, next)
 ```
 
-`Apply` returns Go's zero value after a failed modifier. That is this helper's contract, not a rule for every language or repository. If the repository already returns the last valid value or a result type, preserve that contract.
+Keep a total calculation as an ordinary function. Use `Apply` when a state change has an expected refusal, including a single modifier, so the call site and later composition keep one contract.
 
-Use ordinary calls when the sequence is fixed and already readable. A pipeline earns its name when transformations share a signature and callers compose them.
+## Emitting modifiers
 
-## Reuse configured rules
+Use the emitting branch when success also owes domain facts. This is Writer-style accumulation over Go's fail-fast error return, exposed with domain names:
 
-A rule factory captures policy and returns a pure check. Keep the returned problem independent of field names, logging, or transport formatting so different evaluators can reuse it.
+```go
+package x
+
+type Change[T, F any] struct {
+	Value T
+	Facts []F
+}
+
+type EmittingModifier[T, F any] func(T) (Change[T, F], error)
+
+func LiftModifier[F, T any](modify Modifier[T]) EmittingModifier[T, F] {
+	return func(value T) (Change[T, F], error) {
+		next, err := modify(value)
+		if err != nil {
+			return Change[T, F]{}, err
+		}
+		return Change[T, F]{Value: next}, nil
+	}
+}
+
+func ApplyEmitting[T, F any](
+	initial T,
+	modifiers ...EmittingModifier[T, F],
+) (Change[T, F], error) {
+	state := initial
+	facts := make([]F, 0)
+
+	for _, modify := range modifiers {
+		next, err := modify(state)
+		if err != nil {
+			var zero Change[T, F]
+			return zero, err
+		}
+		state = next.Value
+		facts = append(facts, next.Facts...)
+	}
+
+	return Change[T, F]{Value: state, Facts: facts}, nil
+}
+```
+
+Each modifier returns only its local facts. `ApplyEmitting` owns ordered accumulation:
+
+```go
+type RenewalFact interface{ renewalFact() }
+
+type RenewalScheduled struct{ StartsAt time.Time }
+func (RenewalScheduled) renewalFact() {}
+
+type RenewalTagged struct{ Tag string }
+func (RenewalTagged) renewalFact() {}
+
+func WithSchedule(now time.Time, delay time.Duration) x.EmittingModifier[Renewal, RenewalFact] {
+	return func(current Renewal) (x.Change[Renewal, RenewalFact], error) {
+		if delay < 0 {
+			return x.Change[Renewal, RenewalFact]{}, ErrNegativeDelay
+		}
+		next := current
+		next.StartsAt = now.Add(delay)
+		return x.Change[Renewal, RenewalFact]{
+			Value: next,
+			Facts: []RenewalFact{RenewalScheduled{StartsAt: next.StartsAt}},
+		}, nil
+	}
+}
+
+func WithRecordedTag(tag string) x.EmittingModifier[Renewal, RenewalFact] {
+	return func(current Renewal) (x.Change[Renewal, RenewalFact], error) {
+		if tag == "" {
+			return x.Change[Renewal, RenewalFact]{}, ErrTagRequired
+		}
+		next := current
+		next.Tags = append(slices.Clone(current.Tags), tag)
+		return x.Change[Renewal, RenewalFact]{
+			Value: next,
+			Facts: []RenewalFact{RenewalTagged{Tag: tag}},
+		}, nil
+	}
+}
+```
+
+The laws are part of the helper's contract:
+
+- `ApplyEmitting(initial)` returns `initial` and no facts.
+- Modifiers run left to right; later modifiers receive the previous successful value.
+- Facts preserve modifier order and within-modifier order. Duplicates remain unless the domain forbids them.
+- A no-op normally returns the unchanged value and no facts.
+- The first error wins; later modifiers do not run.
+- Failure returns the zero `Change`, so earlier tentative state and facts are unavailable.
+- This is logical rollback, not compensation. It works only when modifiers neither mutate shared storage nor perform I/O.
+
+Facts should be an immutable, domain-specific family, not `any` and not broker payloads. Copy slices, maps, pointers, and mutable fact payloads before returning them.
+
+Use `LiftModifier` when an independently valid state-only modifier participates in one emitting pipeline. Put the fact type first so Go can infer the value type from the modifier:
+
+```go
+change, err := x.ApplyEmitting(
+	current,
+	WithSchedule(now, delay),
+	x.LiftModifier[RenewalFact](WithTag("reviewed")),
+	WithRecordedTag("scheduled"),
+)
+```
+
+Do not run two pipelines or duplicate the modifier. If a state change forces a fact, keep both in one emitting modifier rather than lifting the state-only half.
+
+## Rules and reducers
+
+Keep reusable constraints independent of field paths and presentation:
 
 ```go
 type Problem struct {
@@ -112,64 +196,51 @@ type Problem struct {
 }
 
 type Rule[T any] func(T) *Problem
-
-func OneOf[T comparable](allowed ...T) Rule[T] {
-	return func(value T) *Problem {
-		if slices.Contains(allowed, value) {
-			return nil
-		}
-		return &Problem{Rule: "one_of", Message: "must be an allowed value"}
-	}
-}
 ```
 
-One evaluator may stop at the first problem while another collects every problem. The rule stays the same. The validation principle owns when each evaluation policy applies.
+A fail-fast guard and an accumulating validator may evaluate the same rule. Accumulate independent problems; fail fast when a later transformation depends on the current one succeeding.
 
-## Test the contract
-
-Test exact output, short-circuit failure, and referenced storage:
+A reducer is an ordinary pure function:
 
 ```go
-func TestRenewalPipelineIsDeterministicAndDoesNotMutateInput(t *testing.T) {
-	now := time.Date(2026, time.August, 20, 9, 0, 0, 0, time.UTC)
-	current := Renewal{Plan: "basic", Tags: []string{"customer-requested"}}
-
-	next, err := Apply(
-		current,
-		WithPlan("pro"),
-		StartingIn(now, 7*24*time.Hour),
-		WithTag("scheduled"),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if next.Plan != "pro" || !next.StartsAt.Equal(now.Add(7*24*time.Hour)) {
-		t.Fatalf("unexpected renewal: %+v", next)
-	}
-	if !slices.Equal(next.Tags, []string{"customer-requested", "scheduled"}) {
-		t.Fatalf("unexpected tags: %v", next.Tags)
-	}
-	if !slices.Equal(current.Tags, []string{"customer-requested"}) {
-		t.Fatalf("input was mutated: %v", current.Tags)
-	}
-}
-
-func TestApplyStopsAfterFailure(t *testing.T) {
-	called := false
-	afterFailure := func(change Renewal) (Renewal, error) {
-		called = true
-		return change, nil
-	}
-
-	_, err := Apply(Renewal{}, WithPlan("enterprise"), afterFailure)
-	if err == nil {
-		t.Fatal("expected invalid plan to fail")
-	}
-	if called {
-		t.Fatal("modifier after failure was called")
-	}
+func ReduceBalance(balance Money, entry LedgerEntry) Money {
+	return balance.Add(entry.Amount)
 }
 ```
 
-Local mutation of a fresh value is fine. Mutation becomes a problem when callers, shared aliases, globals, or external systems can observe it.
+The stream, channel, or subscription owns ordering and cancellation. The reducer owns only the state transition.
+
+## Settle after pure success
+
+`ApplyEmitting` returns pending domain facts. It does not make them durable or deliver them.
+
+```go
+change, err := x.ApplyEmitting(current, WithSchedule(now, delay), WithRecordedTag("scheduled"))
+if err != nil {
+	return err
+}
+
+return settlement.SettleRenewal(ctx, change)
+```
+
+`SettleRenewal` accepts the complete `Change` and writes the state plus mapped outbox records in one real transaction. Use the project's transaction abstraction or `database/sql`. Watermill's Forwarder is a valid adapter choice when the project already uses Watermill, but it is not a domain dependency. Map domain facts to integration messages outside the domain package. Consumers need stable message IDs and idempotency when delivery is at least once.
+
+## Prove the contracts
+
+When the shared helpers are created or changed, put their law suite in the `x` package. Do not rely on domain tests to cover generic composition. Direct tests must prove exact values, exact error identity, order, short-circuiting, and non-mutation. Use noncommuting modifiers or an explicit call trace when order matters.
+
+For emitting pipelines, add proofs that:
+
+- several successful modifiers produce the exact ordered facts;
+- a successful no-fact modifier preserves the accumulator;
+- a late failure returns a zero `Change`, exposes no earlier facts, and skips later work; and
+- nested mutable storage in the original value and facts is not aliased.
+
+Test settlement separately. A focused boundary test proves failure never invokes settlement and success supplies the exact value and facts once. Use an integration test with the real transaction only when claiming that state and outbox rows commit or roll back together. Delivery retries, duplicates, and ordering need their own adapter proofs.
+
+## Pattern sources
+
+- [WriterT](https://hackage.haskell.org/package/transformers/docs/Control-Monad-Trans-Writer-CPS.html) defines the `m (value, output)` algebra and ordered monoidal accumulation used by `Change`.
+- [Go transaction guidance](https://go.dev/doc/database/execute-transactions) defines the commit and rollback boundary used for state plus outbox rows.
+- [The Go specification](https://go.dev/ref/spec#Send_statements) makes clear that a channel send is communication and may block, so it belongs outside a pure modifier.
+- [Watermill Forwarder](https://watermill.io/advanced/forwarder/) is an optional Go outbox relay when Watermill already fits the adapter layer.

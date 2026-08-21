@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mind Merge"
+  short_description: "Preserve decisions and provenance across long chats"
+  default_prompt: "Use $mind-merge to maintain shared understanding and provenance throughout this design conversation."

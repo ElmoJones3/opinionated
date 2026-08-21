@@ -1,183 +1,286 @@
 # TypeScript reference
 
-Use this reference when implementing or reviewing a TypeScript domain model.
+Use this reference when implementing or reviewing a TypeScript domain model. Load the [TypeScript pure-pattern reference](../../principle-prefer-pure-functional-patterns/references/typescript.md) for `Modifier`, `EmittingModifier`, `Change`, `apply`, and `applyEmitting`.
 
-Reuse the project's shared object interface or base class for identity and lifecycle fields. Keep state readonly, expose complete behaviors from the domain-owned module, and make transitions return a new value. Runtime validation remains necessary for hydrated data even when the compiler can describe the valid type.
+For plain domain values, pair a strict Zod schema with its inferred branded type. The schema owns valid shape; the brand prevents a matching object literal from satisfying the domain type without parsing. Use `create` for legal initial state, named modifiers for earned changes, and a separate adapter hydration capability for stored state.
 
-The shared object contract must validate its own hydration data. The worked example assumes the base module exports `Object`, its untrusted `ObjectData` shape, and `Object.hydrate`. Adapt those names to the project instead of validating only the identifier and skipping shared lifecycle fields.
-
-Plain domain values may be JSON-compatible. Do not make transport field names, API schemas, persistence decorators, or serializer behavior part of the domain contract. Adapters map their inputs into domain properties before hydration.
+Keep transport aliases, API schemas, persistence decorators, `toJSON`, and I/O outside the domain module. Zod's readonly wrapper and TypeScript's `readonly` are shallow. Return fresh arrays, objects, maps, sets, and dates when aliases would be unsafe.
 
 ## Worked contract
 
 An `Account` starts active with no failed login attempts.
 
 - Recording a failed login is a consequence of failed credential verification.
-- Only an active account may record the consequence.
-- The third failed login locks the account.
-- Unlocking is a command. It is legal only while locked and resets the failed count.
+- Only an active account may record it.
+- The third failed login locks the account and produces `AccountLocked`.
+- Unlocking is a command invoked after application authorization. The account accepts it only while locked and resets the failed count.
 - An active account has zero to two failures. A locked account has exactly three.
 
-The application verifies credentials and authorizes an unlock. The account owns what those facts do to its state.
+Failed-login recording owes state plus a fact, so it uses an emitting modifier. Unlocking owes only state, so it uses an ordinary modifier.
 
 ```ts
-import { Object, type ObjectData } from '../base/object'
+import * as E from 'fp-ts/Either'
+import { z } from 'zod'
+
+import { ObjectSchema, type ObjectValue } from '../base/object'
+import type { EmittingModifier, Modifier } from '../functional'
 
 const MAX_FAILED_LOGINS = 3
 
-export type AccountState = 'active' | 'locked'
+const ActiveAccountSchema = z.strictObject({
+  ...ObjectSchema.shape,
+  state: z.literal('active'),
+  failedLoginAttempts: z.number().int().min(0).max(MAX_FAILED_LOGINS - 1),
+})
 
-export interface Account extends Object {
-  readonly state: AccountState
-  readonly failedLoginAttempts: number
+const LockedAccountSchema = z.strictObject({
+  ...ObjectSchema.shape,
+  state: z.literal('locked'),
+  failedLoginAttempts: z.literal(MAX_FAILED_LOGINS),
+})
+
+export const AccountSchema = z
+  .discriminatedUnion('state', [ActiveAccountSchema, LockedAccountSchema])
+  .brand<'Account'>()
+  .readonly()
+
+export type Account = z.infer<typeof AccountSchema>
+
+export type AccountTransitionError =
+  | { readonly code: 'account_not_active' }
+  | { readonly code: 'account_not_locked' }
+
+export type AccountFact = {
+  readonly type: 'accountLocked'
+  readonly accountId: string
 }
-
-export interface AccountData extends ObjectData {
-  readonly state: unknown
-  readonly failedLoginAttempts: unknown
-}
-
-export class IllegalAccountTransition extends Error {}
 
 export const Account = {
-  create(object: Object): Account {
-    return validate({ ...object, state: 'active', failedLoginAttempts: 0 })
-  },
-
-  hydrate(data: AccountData): Account {
-    return validate(data)
-  },
-
-  recordFailedLogin(account: Account): Account {
-    if (account.state !== 'active') {
-      throw new IllegalAccountTransition('only an active account can record a failed login')
-    }
-
-    const failedLoginAttempts = account.failedLoginAttempts + 1
-    const state = failedLoginAttempts === MAX_FAILED_LOGINS ? 'locked' : 'active'
-    return validate({ ...account, state, failedLoginAttempts })
-  },
-
-  unlock(account: Account): Account {
-    if (account.state !== 'locked') {
-      throw new IllegalAccountTransition('only a locked account can be unlocked')
-    }
-
-    return validate({ ...account, state: 'active', failedLoginAttempts: 0 })
+  create(object: ObjectValue): Account {
+    return AccountSchema.parse({
+      ...object,
+      state: 'active',
+      failedLoginAttempts: 0,
+    })
   },
 }
 
-function validate(account: AccountData): Account {
-  const object = Object.hydrate(account)
-  if (account.state !== 'active' && account.state !== 'locked') {
-    throw new Error('account state must be active or locked')
-  }
-  if (typeof account.failedLoginAttempts !== 'number') {
-    throw new Error('failed login attempts must be a number')
-  }
-  if (!Number.isInteger(account.failedLoginAttempts)) {
-    throw new Error('failed login attempts must be an integer')
-  }
-  if (account.failedLoginAttempts < 0 || account.failedLoginAttempts > MAX_FAILED_LOGINS) {
-    throw new Error('failed login attempts must be between zero and three')
-  }
-  if (account.state === 'active' && account.failedLoginAttempts === MAX_FAILED_LOGINS) {
-    throw new Error('active account cannot have three failed logins')
-  }
-  if (account.state === 'locked' && account.failedLoginAttempts !== MAX_FAILED_LOGINS) {
-    throw new Error('locked account must have three failed logins')
-  }
-  return globalThis.Object.freeze({
-    ...account,
-    ...object,
-    state: account.state,
-    failedLoginAttempts: account.failedLoginAttempts,
-  })
+export const AccountModifiers = {
+  withFailedLoginRecorded(): EmittingModifier<
+    Account,
+    AccountTransitionError,
+    AccountFact
+  > {
+    return account => {
+      if (account.state !== 'active') {
+        return E.left({ code: 'account_not_active' })
+      }
+
+      const failedLoginAttempts = account.failedLoginAttempts + 1
+      const state = failedLoginAttempts === MAX_FAILED_LOGINS ? 'locked' : 'active'
+      const next = AccountSchema.parse({ ...account, state, failedLoginAttempts })
+      const facts: readonly AccountFact[] =
+        state === 'locked'
+          ? [{ type: 'accountLocked', accountId: account.id }]
+          : []
+
+      return E.right({ value: next, facts })
+    }
+  },
+
+  withUnlock(): Modifier<Account, AccountTransitionError> {
+    return account => {
+      if (account.state !== 'locked') {
+        return E.left({ code: 'account_not_locked' })
+      }
+
+      return E.right(
+        AccountSchema.parse({
+          ...account,
+          state: 'active',
+          failedLoginAttempts: 0,
+        }),
+      )
+    }
+  },
 }
 ```
 
-The application service coordinates persistence without reproducing the threshold:
+`z.strictObject` rejects unexpected stored fields instead of silently stripping them. The brand means this does not compile:
+
+```ts
+// BAD: matching shape is not an Account and cannot earn locked state.
+const forged: Account = {
+  id: 'acct-1',
+  state: 'locked',
+  failedLoginAttempts: 3,
+}
+```
+
+Put hydration behind an internal, adapter-facing path. The application barrel exports `Account`, `AccountModifiers`, and the `Account` type, but not `AccountSchema` or this function:
+
+```ts
+// domains/accounts/internal/hydration.ts
+import { AccountSchema, type Account } from '../account'
+
+export function hydrateAccount(data: unknown): Account {
+  return AccountSchema.parse(data)
+}
+```
+
+Only parsing can produce the brand. `create` chooses legal initial state; behavior earns later state. Hydration can restore a valid locked account, so keep that capability out of ordinary application imports and never use it as a command.
+
+Parsing every successful modifier result keeps whole-object invariants in force. A schema exception after valid domain input is a programmer defect, not an expected `Left`.
+
+## Call without restating rules
 
 ```ts
 const account = await repository.get(accountId)
-const nextAccount = Account.recordFailedLogin(account)
-await repository.save(nextAccount)
+const result = applyEmitting(
+  account,
+  AccountModifiers.withFailedLoginRecorded(),
+)
+if (E.isLeft(result)) return result
+
+await settlement.settleAccount(result.right)
 ```
 
-Test behavior through the public API. Use the project's test runner. This example uses Vitest:
+`settleAccount` accepts the complete `Change` and writes state plus mapped outbox records in one real transaction. The application verifies credentials and maps stored values. It does not reproduce the threshold, assign locked state, or invent `AccountLocked`.
+
+## Prove earned state and restoration
 
 ```ts
+import * as E from 'fp-ts/Either'
 import { describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
-import { Account, IllegalAccountTransition } from './account'
+import { apply, applyEmitting } from '../functional'
+import {
+  Account,
+  AccountModifiers,
+  type Account as AccountValue,
+} from './account'
+import { hydrateAccount } from './internal/hydration'
 
-function lockedAccount(): Account {
+function expectRight<A>(result: E.Either<unknown, A>): A {
+  if (E.isLeft(result)) throw new Error(`unexpected failure: ${JSON.stringify(result.left)}`)
+  return result.right
+}
+
+function lockedAccount(): AccountValue {
   let account = Account.create({ id: 'acct-1' })
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    account = Account.recordFailedLogin(account)
+    account = expectRight(
+      applyEmitting(account, AccountModifiers.withFailedLoginRecorded()),
+    ).value
   }
   return account
 }
 
 describe('Account', () => {
-  it('locks on the third failed login', () => {
-    let account = Account.create({ id: 'acct-1' })
-
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      account = Account.recordFailedLogin(account)
-    }
-
-    expect(account.state).toBe('locked')
-    expect(account.failedLoginAttempts).toBe(3)
-  })
-
-  it('rejects another failed login while locked', () => {
-    const account = lockedAccount()
-
-    expect(() => Account.recordFailedLogin(account)).toThrow(IllegalAccountTransition)
-    expect(() => Account.recordFailedLogin(account)).toThrow(
-      'only an active account can record a failed login',
+  it('earns locked state and its fact on the third failure', () => {
+    const initial = Account.create({ id: 'acct-1' })
+    const first = expectRight(
+      applyEmitting(initial, AccountModifiers.withFailedLoginRecorded()),
     )
-    expect(account).toEqual({ id: 'acct-1', state: 'locked', failedLoginAttempts: 3 })
+    const second = expectRight(
+      applyEmitting(first.value, AccountModifiers.withFailedLoginRecorded()),
+    )
+    const third = expectRight(
+      applyEmitting(second.value, AccountModifiers.withFailedLoginRecorded()),
+    )
+
+    expect(third.value.id).toBe('acct-1')
+    expect(third.value.state).toBe('locked')
+    expect(third.value.failedLoginAttempts).toBe(3)
+    expect(third.facts).toEqual([
+      { type: 'accountLocked', accountId: 'acct-1' },
+    ])
+    expect(first.facts).toEqual([])
+    expect(second.facts).toEqual([])
   })
 
-  it('unlocks and resets the failed count', () => {
+  it('rejects another failed login without leaking change', () => {
     const account = lockedAccount()
+    const result = applyEmitting(
+      account,
+      AccountModifiers.withFailedLoginRecorded(),
+    )
 
-    const nextAccount = Account.unlock(account)
-
-    expect(nextAccount.state).toBe('active')
-    expect(nextAccount.failedLoginAttempts).toBe(0)
+    expect(result).toEqual(E.left({ code: 'account_not_active' }))
+    expect(account).toEqual({
+      id: 'acct-1',
+      state: 'locked',
+      failedLoginAttempts: 3,
+    })
   })
 
-  it('rejects unlocking an active account', () => {
+  it('rejects unlock from active state', () => {
     const account = Account.create({ id: 'acct-1' })
-
-    expect(() => Account.unlock(account)).toThrow(IllegalAccountTransition)
-    expect(() => Account.unlock(account)).toThrow('only a locked account can be unlocked')
-    expect(account).toEqual({ id: 'acct-1', state: 'active', failedLoginAttempts: 0 })
+    expect(apply(account, AccountModifiers.withUnlock())).toEqual(
+      E.left({ code: 'account_not_locked' }),
+    )
+    expect(account).toEqual({
+      id: 'acct-1',
+      state: 'active',
+      failedLoginAttempts: 0,
+    })
   })
 
-  it('rejects impossible hydrated state', () => {
-    expect(() =>
-      Account.hydrate({
+  it('unlocks through behavior', () => {
+    expect(expectRight(apply(lockedAccount(), AccountModifiers.withUnlock()))).toEqual(
+      Account.create({ id: 'acct-1' }),
+    )
+  })
+
+  it('accepts valid hydration and rejects the exact broken field', () => {
+    expect(
+      hydrateAccount({
+        id: 'acct-1',
+        state: 'locked',
+        failedLoginAttempts: 3,
+      }),
+    ).toEqual(lockedAccount())
+
+    try {
+      hydrateAccount({
         id: 'acct-1',
         state: 'locked',
         failedLoginAttempts: 1,
-      }),
-    ).toThrow('locked account must have three failed logins')
-  })
-
-  it('rejects an unknown hydrated state', () => {
-    expect(() =>
-      Account.hydrate({
-        id: 'acct-1',
-        state: 'disabled',
-        failedLoginAttempts: 0,
-      }),
-    ).toThrow('account state must be active or locked')
+      })
+      throw new Error('expected hydration to fail')
+    } catch (error) {
+      expect(error).toBeInstanceOf(z.ZodError)
+      const issue = (error as z.ZodError).issues[0]
+      expect(issue.path).toEqual(['failedLoginAttempts'])
+      expect(issue.code).toBe('invalid_value')
+    }
   })
 })
 ```
 
-If the repository already uses a runtime validation library, keep the domain schema beside the model and have `hydrate` call it. Do not add a validation dependency merely to avoid a short pure validator.
+Do not import `internal/hydration` to stage earned state in ordinary behavior tests. Build the fixture through production behavior. The valid hydration case prevents a validator that rejects every stored record from passing; the negative pins the exact field and issue code.
+
+## Class alternative
+
+Use a class when the repository already models domain identity and behavior with classes or needs several meaningful construction routes. Keep its constructor private, fields readonly, and creation explicit:
+
+```ts
+class AccountEntity {
+  private constructor(private readonly value: Account) {}
+
+  static create(object: ObjectValue): AccountEntity {
+    return new AccountEntity(Account.create(object))
+  }
+
+  // Keep this static behind the adapter-facing export. Do not expose the
+  // AccountEntity constructor value from the application module.
+  static hydrate(data: unknown): AccountEntity {
+    return new AccountEntity(AccountSchema.parse(data))
+  }
+}
+```
+
+Expose `create` through the application-facing factory and `hydrate` through the repository adapter; do not export the class constructor value to ordinary callers. Add named `fromX` factories or constructor overloads only for distinct legal sources. Do not add setters, public raw-state constructors, `serialize`, `toJSON`, or transport decorators. Class methods still return the same ordinary or emitting modifier result when behavior may be refused.
+
+Keep authorization, repositories, clocks, DTO mapping, transactions, and publication outside the module. When several aggregates change, compute every pure result first, then coordinate persistence. The modifier contract does not create transaction atomicity by itself.

@@ -22,6 +22,8 @@
     "./skills/communication/stay-in-your-lane/",
     "./skills/communication/unslop/",
     "./skills/engineering/domain-modeling/",
+    "./skills/engineering/principle-always-comment-code/",
+    "./skills/engineering/principle-code-first-documentation/",
     "./skills/engineering/principle-prefer-pure-functional-patterns/",
     "./skills/engineering/semantic-mapping/",
     "./skills/engineering/semantic-snapshot/",

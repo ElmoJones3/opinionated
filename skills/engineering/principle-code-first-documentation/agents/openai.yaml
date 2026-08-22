@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code-First API Documentation"
+  short_description: "Generate OpenAPI from API boundary code"
+  default_prompt: "Use $principle-code-first-documentation to make this API boundary generate complete OpenAPI documentation."

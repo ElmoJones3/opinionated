@@ -1,6 +1,8 @@
 ---
 name: mind-merge
-description: Adjudicate long or branching design conversations by maintaining a local graph of open Questions, accepted Decisions, Evidence, dependencies, provenance, and Phase changes in a durable HTML worksheet. Use when shared understanding must survive mid-to-late context, a conversation has several dependent choices, or the user asks to mind merge. Do not use for ordinary brainstorming, note-taking, raw mind maps, or subject-domain modeling.
+description: Adjudicate long or branching design conversations by maintaining a local graph of open Questions, accepted Decisions, Evidence, dependencies, provenance, and Phase changes in a durable HTML worksheet. Use only when explicitly requested.
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Adjudicate shared understanding
@@ -65,4 +67,3 @@ The capture command appends all accepted changes or refuses them without alterin
 ## Finish the pass
 
 Close when the bounded frontier is exhausted or the user chooses to stop. Preserve unresolved Questions. Do not declare shared understanding complete or produce the subject skill's downstream artifact until the user confirms the merge.
-

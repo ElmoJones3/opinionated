@@ -64,14 +64,14 @@ This repository does not contain secrets. The tools are part of my baseline beca
 
 ## Agent skills
 
-The repository currently has 32 skills in six categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
+The repository currently has 34 skills in six categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
 | Category | Skills | What they govern |
 | --- | ---: | --- |
 | [Communication](skills/communication/README.md) | 3 | Plain language, human voice, and respect for user authority. |
-| [Engineering](skills/engineering/README.md) | 4 | Domain behavior, pure transformations, project terminology, and decision records. |
+| [Engineering](skills/engineering/README.md) | 6 | Code comments, generated API contracts, domain behavior, pure transformations, project terminology, and decision records. |
 | [Productivity](skills/productivity/README.md) | 1 | Shared understanding, question dependencies, decisions, and provenance across long conversations. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
 | [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
@@ -138,7 +138,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `cfg/git.sh` | Git identity, SSH key setup, and commit signing. |
 | `cfg/setup.sh` | The macOS rebuild sequence. |
 | `skills/communication/` | Rules for language, voice, and agent authority. |
-| `skills/engineering/` | Rules for domain code, value transformations, terminology, and ADRs. |
+| `skills/engineering/` | Rules for code comments, generated API contracts, domain code, value transformations, terminology, and ADRs. |
 | `skills/productivity/` | Workflows for durable shared understanding and conversational provenance. |
 | `skills/security/` | SOPS setup, synchronization, naming, and audit rules. |
 | `skills/testing/` | Testing process, proof strategies, fixtures, boundaries, determinism, execution, and support. |

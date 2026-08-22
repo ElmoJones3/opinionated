@@ -6,7 +6,7 @@ These skills help an agent preserve useful working state across conversations. T
 
 | Skill | Trigger | What it owns |
 | --- | --- | --- |
-| [`mind-merge`](mind-merge/SKILL.md) | Automatic for long or branching design conversations | Maintains questions, accepted decisions, dependencies, provenance, phases, and a durable worksheet until the user confirms shared understanding. |
+| [`mind-merge`](mind-merge/SKILL.md) | Explicit only | Maintains questions, accepted decisions, dependencies, provenance, phases, and a durable worksheet until the user confirms shared understanding. |
 
 ## Mind merge design record
 

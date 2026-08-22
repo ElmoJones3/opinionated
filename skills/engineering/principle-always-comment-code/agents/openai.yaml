@@ -1,0 +1,6 @@
+interface:
+  display_name: "Always Comment Code"
+  short_description: "Preserve intent beside every named declaration"
+  default_prompt: "Use $principle-always-comment-code to document every file, declaration, and member in this change."
+policy:
+  allow_implicit_invocation: true

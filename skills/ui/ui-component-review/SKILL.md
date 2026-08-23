@@ -20,6 +20,7 @@ Load these skills before reviewing:
 - `ui-compound-components`
 - `ui-component-layout`
 - `ui-principle-state-management`
+- `ui-principle-shadcn-is-boilerplate`
 
 Report any missing skill. Do not recreate a missing rule from memory.
 

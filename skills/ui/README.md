@@ -2,7 +2,7 @@
 
 This directory is the house React component model. It is intentionally prescriptive. The point is to stop agents from inventing a new component grammar every time they touch a screen.
 
-Seven authoring skills activate when their descriptions match the work. One explicit skill runs the full audit when asked.
+Eight authoring skills activate when their descriptions match the work. One explicit skill runs the full audit when asked.
 
 ## The skills
 
@@ -14,6 +14,7 @@ Seven authoring skills activate when their descriptions match the work. One expl
 | [`ui-component-style-groups`](ui-component-style-groups/SKILL.md) | Automatic | Groups component-local Tailwind, StyleX, and Motion decisions by named visual concern. |
 | [`ui-component-variants`](ui-component-variants/SKILL.md) | Automatic | Moves prop-selected and state-selected visuals into typed CVA recipes or StyleX resolvers. |
 | [`ui-compound-components`](ui-compound-components/SKILL.md) | Automatic | Exports interdependent component parts through one discoverable root API. |
+| [`ui-principle-shadcn-is-boilerplate`](ui-principle-shadcn-is-boilerplate/SKILL.md) | Automatic | Finishes shadcn registry output by applying the house Tailwind and compound-export rules without rewriting registry-managed behavior. |
 | [`ui-principle-state-management`](ui-principle-state-management/SKILL.md) | Automatic | Chooses the rightful state owner, then uses RxJS, an Immer reducer, or a named Immer producer with direct tests. |
 | [`ui-component-review`](ui-component-review/SKILL.md) | Explicit only | Loads every rule above and reports concrete violations without editing unless fixes were also requested. |
 
@@ -26,6 +27,8 @@ Seven authoring skills activate when their descriptions match the work. One expl
 `ui-component-prop-contracts` applies across the set. A wrapper can expose caller props without surrendering the behavior, structural attributes, or merged styles that define the component.
 
 `ui-principle-state-management` owns behavioral state and transition tests. `ui-component-variants` consumes that state when appearance changes. A visual variant never becomes a second copy of the behavioral state.
+
+`ui-principle-shadcn-is-boilerplate` owns the post-install normalization pass for shadcn registry source. It applies the house Tailwind and compound-export rules after the CLI finishes, but does not turn copied state or behavior into a refactor mandate.
 
 The explicit reviewer coordinates the rules. It decides which ones apply before reporting anything, so an atom does not receive layout or compound-component ceremony it does not need.
 

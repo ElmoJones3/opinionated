@@ -1,13 +1,14 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# Rebuild the interactive macOS shell provisioned by cfg/setup.sh. Homebrew owns
+# machine tools, while setup.sh installs Oh My Zsh, Grok, and mise separately.
 
-# Path to your Oh My Zsh installation.
+# setup.sh installs Oh My Zsh here before it links this file.
 export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# Keep the stock theme so the shell stays familiar across rebuilt machines.
 ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
@@ -70,9 +71,11 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+# Load only Git integration because every extra plugin adds shell startup work.
 plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
+# Load Oh My Zsh after its path, theme, and plugin contract is complete.
+source "$ZSH/oh-my-zsh.sh"
 
 # User configuration
 
@@ -100,104 +103,133 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # >>> edit zshrc >>>
+# Open the tracked zsh configuration through the manually installed editor CLI.
 alias zshconfig="code ~/.zshrc"
+# Open Oh My Zsh itself when plugin or theme behavior needs inspection.
 alias ohmyzsh="code ~/.oh-my-zsh"
 # <<< edit zshrc <<<
 
 # >>> Navigation shortcuts >>>
+# Move up one directory without spelling out the cd command.
 alias ..='cd ..'
+# Move up two directories during repository navigation.
 alias ...='cd ../..'
+# Move up three directories during repository navigation.
 alias ....='cd ../../..'
+# Move up four directories during repository navigation.
 alias .....='cd ../../../..'
+# Return to the current user's home directory from any working tree.
 alias ~='cd ~'
+# Return to the previous working directory while preserving cd's own output.
 alias -- -='cd -'
 # <<< Navigation shortcuts <<<
 
 # >>> Directory listing >>>
-# Directory listing
+# Show ownership, modes, hidden files, and type suffixes during file audits.
 alias ll='ls -alF'
+# Show hidden entries without the synthetic dot directory entries.
 alias la='ls -A'
+# Keep the compact column view available for quick directory scans.
 alias l='ls -CF'
 # <<< Directory listing <<<
 
 # >>> Clear screen >>>
-# Clear screen
+# Clear terminal output without resetting the current shell session.
 alias c='clear'
 # <<< Clear screen <<<
 
 # >>> Git shortcuts >>>
-# Git shortcuts
+# Keep the most frequent Git inspection command to two keystrokes.
 alias gs='git status'
+# Stage paths through Git without changing its argument semantics.
 alias ga='git add'
+# Start a commit through Git's configured editor and signing policy.
 alias gc='git commit'
+# Push the current branch through Git's configured remote and upstream.
 alias gp='git push'
+# Inspect compact branch and merge history without replacing full git log.
 alias gl='git log --oneline --graph --decorate'
 # <<< Git shortcuts <<<
 
 # >>> System >>>
-# System
-alias update='sudo apt update && sudo apt upgrade -y'
-alias ports='netstat -tulanp'
+# Refresh Homebrew metadata before upgrading the formulae and casks it owns.
+alias update='brew update && brew upgrade'
+# Show visible listening TCP sockets and UDP sockets with owning processes.
+alias ports='lsof -nP -iTCP -sTCP:LISTEN -iUDP'
 # <<< System <<<
 
 # >>> File operations >>>
-# File operations
+# Ask before overwriting and show each copied path during manual file work.
 alias cp='cp -iv'
+# Ask before overwriting and show each moved path during manual file work.
 alias mv='mv -iv'
+# Ask before removing files because this interactive shell favors recovery.
 alias rm='rm -iv'
 # <<< File operations <<<
 
 # >>> Reload zsh configuration >>>
+# Apply tracked shell changes without replacing the current terminal session.
 alias reload='source ~/.zshrc'
 # <<< Reload zsh configuration <<<
 
 # >>> Create parent directories on demand >>>
+# Create missing parent directories and print every directory created.
 alias mkdir='mkdir -pv'
 # <<< Create parent directories on demand <<<
 
 # >>> Show disk usage in human-readable format >>>
+# Keep filesystem capacity output readable without remembering df flags.
 alias df='df -h'
 # <<< Show disk usage in human-readable format <<<
 
 # >>> Show directory size >>>
+# Report one human-readable total for each requested directory.
 alias du='du -sh'
 # <<< Show directory size <<<
 
 # >>> Search command history >>>
+# Filter interactive history with grep while accepting the caller's pattern.
 alias h='history | grep'
 # <<< Search command history <<<
 
 # >>> IP addresses >>>
+# Print the public IP reported by the external endpoint, followed by a newline.
 alias myip='curl http://ipecho.net/plain; echo'
 # <<< IP addresses <<<
 
 # >>> Ping with a count of 5 >>>
+# Bound connectivity checks so ping returns without manual interruption.
 alias ping5='ping -c 5'
 # <<< Ping with a count of 5 <<<
 
 # >>> Simple HTTP server >>>
+# Serve the working directory through mise-managed Python for local inspection.
 alias serve='python -m http.server'
 # <<< Simple HTTP server <<<
 
 # >>> Quick find >>>
+# Find names below the working directory by a caller-supplied substring.
 f() { find . -name "*$1*" }
 # <<< Quick find <<<
 
 # >>> Extract various compressed file formats >>>
+# Extract one existing archive with macOS tools or Brewfile-owned sevenzip.
+# The caller supplies one path. RAR extraction flattens stored paths to match the
+# old unrar behavior, while the other archive commands keep their native rules.
 extract() {
-    if [ -f $1 ] ; then
-        case $1 in
-            *.tar.bz2)   tar xjf $1     ;;
-            *.tar.gz)    tar xzf $1     ;;
-            *.bz2)       bunzip2 $1     ;;
-            *.rar)       unrar e $1     ;;
-            *.gz)        gunzip $1      ;;
-            *.tar)       tar xf $1      ;;
-            *.tbz2)      tar xjf $1     ;;
-            *.tgz)       tar xzf $1     ;;
-            *.zip)       unzip $1       ;;
-            *.Z)         uncompress $1  ;;
-            *.7z)        7z x $1        ;;
+    if [ -f "$1" ] ; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       7zz e "$1"        ;;
+            *.gz)        gunzip "$1"       ;;
+            *.tar)       tar xf "$1"       ;;
+            *.tbz2)      tar xjf "$1"      ;;
+            *.tgz)       tar xzf "$1"      ;;
+            *.zip)       unzip "$1"        ;;
+            *.Z)         uncompress "$1"   ;;
+            *.7z)        7zz x "$1"        ;;
             *)           echo "'$1' cannot be extracted via extract()" ;;
         esac
     else
@@ -207,16 +239,27 @@ extract() {
 # <<< Extract various compressed file formats <<<
 
 # >>> grok installer >>>
+# Find the Grok CLI installed outside Homebrew by cfg/setup.sh.
 export PATH="$HOME/.grok/bin:$PATH"
+# Make Grok's generated zsh completions discoverable before compinit runs.
 fpath=(~/.grok/completions/zsh $fpath)
+# Build the completion cache once per shell without repeating security checks.
 autoload -Uz compinit && compinit -C
 # <<< grok installer <<<
 
 # >>> mise activation >>>
+# Put cfg/mise.toml's Go, Node, and Python runtimes on the interactive PATH.
 eval "$("$HOME/.local/bin/mise" activate zsh)"
 # <<< mise activation <<<
 
+# >>> fzf >>>
+# Load key bindings and fuzzy completion from the Brewfile-owned fzf binary.
+source <(fzf --zsh)
+# <<< fzf <<<
+
 # >>> Zoxide >>>
+# Register zoxide's directory-tracking hooks and generated shell command.
 eval "$(zoxide init zsh)"
+# Use z as the short entry point without replacing zoxide's full command.
 alias z='zoxide'
 # <<< Zoxide <<<

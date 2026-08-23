@@ -16,6 +16,10 @@ Do not add component state until its owner is clear. Keep state with the system 
 
 Do not mirror owner-managed values into React state. Read [references/owner-libraries.md](references/owner-libraries.md) when server data, URL state, or forms are involved.
 
+A shadcn installation does not make copied registry state application-authored
+state. Apply `ui-principle-shadcn-is-boilerplate` and preserve those internals
+unless requested behavior or a concrete defect requires changing them.
+
 ## Choose the application-owned model
 
 Evaluate these models in order:

@@ -51,6 +51,7 @@
     "./skills/ui/ui-component-style-groups/",
     "./skills/ui/ui-component-variants/",
     "./skills/ui/ui-compound-components/",
+    "./skills/ui/ui-principle-shadcn-is-boilerplate/",
     "./skills/ui/ui-principle-state-management/"
   ]
 }

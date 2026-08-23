@@ -10,6 +10,8 @@ brew "herdr"
 brew "jq"
 # Fast recursive text search for repositories and shell workflows.
 brew "ripgrep"
+# Extract RAR and 7z archives through the shared zsh helper.
+brew "sevenzip"
 # Encrypt structured configuration while leaving it reviewable in Git.
 brew "sops"
 # Jump quickly among frequently used directories.

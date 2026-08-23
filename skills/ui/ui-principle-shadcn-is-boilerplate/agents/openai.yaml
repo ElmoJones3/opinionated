@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadcn Is Boilerplate"
+  short_description: "Normalize shadcn styles and exports"
+  default_prompt: "Use $ui-principle-shadcn-is-boilerplate to finish this shadcn component after installation."

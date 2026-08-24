@@ -1,6 +1,6 @@
 ---
 name: ui-component-layout
-description: Enforce the Base.Shell -> Base.Constraint -> Base.Layout grammar. Mandatory when creating or changing a React component that arranges children or responds to available space.
+description: Enforce the Base.Shell to Base.Constraint to Base.Layout grammar. Mandatory when creating or changing a React component that arranges children or responds to available space.
 user-invocable: false
 ---
 

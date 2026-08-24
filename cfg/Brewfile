@@ -8,6 +8,8 @@ brew "gh"
 brew "herdr"
 # Inspect and transform JSON from the command line.
 brew "jq"
+# Inspect and repair Git state interactively without replacing command-line Git.
+brew "lazygit"
 # Fast recursive text search for repositories and shell workflows.
 brew "ripgrep"
 # Extract RAR and 7z archives through the shared zsh helper.
@@ -20,3 +22,19 @@ brew "zoxide"
 cask "codex"
 # Primary terminal, installed before the rest of the environment.
 cask "ghostty"
+# Open remote repositories through Cursor's SSH workflow.
+vscode "anysphere.remote-ssh"
+# Complete Tailwind classes and report invalid utilities inside the editor.
+vscode "bradlc.vscode-tailwindcss"
+# Show project ESLint findings in the editor that owns the active file.
+vscode "dbaeumer.vscode-eslint"
+# Connect Go editing, tests, formatting, and language-server behavior.
+vscode "golang.go"
+# Surface Pyrefly type findings while editing Python projects.
+vscode "meta.pyrefly"
+# Run the shared Go linter suites expected by repositories on this workstation.
+go "github.com/golangci/golangci-lint/v2/cmd/golangci-lint"
+# Supply the Go language server used by editors and navigation tools.
+go "golang.org/x/tools/gopls"
+# Generate Swagger contracts from the Gin handler comments this repository requires.
+go "github.com/swaggo/swag/cmd/swag"

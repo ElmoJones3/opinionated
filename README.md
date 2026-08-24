@@ -26,7 +26,7 @@ The first setup happened by hand:
 ./cfg/setup.sh
 ```
 
-It currently supports macOS. It installs software, so read it before running it. Existing `.zshrc` and mise configuration files get timestamped backups before the tracked files are linked.
+It currently supports macOS. It installs software, so read it before running it. Existing `.zshrc` and mise configuration files get timestamped backups. The bootstrap copies `.zshrc` into an editable machine-owned file and links the tracked mise policy.
 
 The Git defaults are mine. Anyone else should pass their own values:
 
@@ -40,7 +40,7 @@ Raycast and Cursor stay manual. Both are downloads with account setup, and prete
 
 ### Homebrew
 
-Homebrew owns machine-level packages and applications. [`cfg/Brewfile`](cfg/Brewfile) is both an install list and a checklist. Every entry has a comment explaining why it is there. A future cleanup should be able to answer a simple question: do I still use this?
+Homebrew Bundle owns machine-level packages, applications, editor extensions, and global Go tools. [`cfg/Brewfile`](cfg/Brewfile) is both an install list and a checklist. Every entry has a comment explaining why it is there. A future cleanup should be able to answer a simple question: do I still use this?
 
 ### mise
 
@@ -57,6 +57,27 @@ This repository does not contain secrets. The tools are part of my baseline beca
 ### zsh and Oh My Zsh
 
 [`cfg/zshrc`](cfg/zshrc) is the shell muscle memory I carried from the previous laptop. It keeps the aliases I actually use, activates mise and zoxide, and adds Grok completion. It is intentionally boring. A shell configuration should save keystrokes, not become a second operating system.
+
+### Keep the primary workstation recorded
+
+The primary workstation owns its live shell and installed Homebrew state. The repository keeps reviewable snapshots. Capture is explicit and one-way:
+
+```bash
+make sync-zsh
+make sync-brew
+```
+
+`sync-zsh` validates the live file before replacing `cfg/zshrc`. It rejects pnpm-owned path blocks because mise owns Node tooling here, and it rejects literal home paths that would make the public snapshot specific to one account.
+
+`sync-brew` asks Homebrew for the installed-state snapshot, validates the generated Brewfile, and preserves the existing rationale for declarations that did not change. It does not install or remove software.
+
+Run the complete repository gate before committing:
+
+```bash
+make validate
+```
+
+The gate checks Python formatting and lint, executes the tests, passes every skill through skill-creator's canonical validator, and checks plugin manifests, versions, catalog counts, agent metadata, shell syntax, the Brewfile, and Git whitespace.
 
 ### SSH signing
 
@@ -132,7 +153,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 
 | Path | What is there |
 | --- | --- |
-| `cfg/Brewfile` | Machine packages and the reason each one is installed. |
+| `cfg/Brewfile` | Machine packages, applications, extensions, global tools, and their reasons. |
 | `cfg/mise.toml` | Go, Node, and the intentional Python 3.12 pin. |
 | `cfg/zshrc` | Shared shell configuration and aliases. |
 | `cfg/git.sh` | Git identity, SSH key setup, and commit signing. |
@@ -146,6 +167,9 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `skills/**/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
 | `.codex-plugin/` | Shared ChatGPT and Codex plugin metadata. |
 | `.claude-plugin/` | Claude Code plugin and marketplace metadata. |
+| `Makefile` | One-way workstation capture, validation, formatting, tests, and version updates. |
+| `scripts/` | Tested capture, version, and repository-validation commands. |
+| `tests/` | Isolated proofs for the repository maintenance commands. |
 | `install.sh` | Personal skill installation through live symlinks. |
 
 ## Add a skill

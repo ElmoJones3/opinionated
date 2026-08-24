@@ -1,0 +1,17 @@
+# Python metadata here belongs only to repository maintenance tooling.
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+# Ruff shares Black's line length and the mise-managed Python baseline.
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+# Errors, imports, and PEP 257 coverage are mandatory for scripts and tests.
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "D"]
+
+# PEP 257 is the repository default because no framework convention owns these scripts.
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"

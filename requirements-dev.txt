@@ -1,0 +1,6 @@
+# Black enforces one Python layout for repository maintenance scripts.
+black>=25,<27
+# PyYAML lets the canonical skill validator parse full YAML instead of an imitation.
+PyYAML>=6,<7
+# Ruff enforces Python correctness, imports, and documentation coverage.
+ruff>=0.11,<1

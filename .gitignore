@@ -1,0 +1,5 @@
+# Python tooling is reproducible from requirements-dev.txt; local environments are not source.
+.venv/
+# Python bytecode belongs to the interpreter that created it, not the repository.
+__pycache__/
+*.py[cod]

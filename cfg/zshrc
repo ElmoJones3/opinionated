@@ -250,6 +250,8 @@ autoload -Uz compinit && compinit -C
 # >>> mise activation >>>
 # Put cfg/mise.toml's Go, Node, and Python runtimes on the interactive PATH.
 eval "$("$HOME/.local/bin/mise" activate zsh)"
+# Run one command through mise resolution without permanently changing shell state.
+alias x='mise x --'
 # <<< mise activation <<<
 
 # >>> fzf >>>

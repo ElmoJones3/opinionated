@@ -1,0 +1,6 @@
+interface:
+  display_name: "Enforce Distributed Authority"
+  short_description: "Fence stale workers at protected state"
+  default_prompt: "Use $principle-enforce-distributed-authority to make claims, leases, and writes reject stale actors."
+policy:
+  allow_implicit_invocation: true

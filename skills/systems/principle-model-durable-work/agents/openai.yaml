@@ -1,0 +1,6 @@
+interface:
+  display_name: "Model Durable Work"
+  short_description: "Make work and recovery state survive workers"
+  default_prompt: "Use $principle-model-durable-work to give this work durable identity, progress, attempts, and outcomes."
+policy:
+  allow_implicit_invocation: true

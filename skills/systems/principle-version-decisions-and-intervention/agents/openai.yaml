@@ -1,0 +1,6 @@
+interface:
+  display_name: "Versioned Decisions and Intervention"
+  short_description: "Version evidence, decisions, approvals, and actions"
+  default_prompt: "Use $principle-version-decisions-and-intervention to derive and enforce this automated or human decision."
+policy:
+  allow_implicit_invocation: true

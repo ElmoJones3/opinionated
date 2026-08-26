@@ -1,0 +1,6 @@
+interface:
+  display_name: "Contain Untrusted Work"
+  short_description: "Restrict lower-trust inputs, code, and capabilities"
+  default_prompt: "Use $principle-contain-untrusted-work to validate this boundary and contain the authority it exposes."
+policy:
+  allow_implicit_invocation: true

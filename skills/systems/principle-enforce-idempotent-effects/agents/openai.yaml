@@ -1,0 +1,6 @@
+interface:
+  display_name: "Enforce Idempotent Effects"
+  short_description: "Make equivalent requests converge at the receiver"
+  default_prompt: "Use $principle-enforce-idempotent-effects to enforce one logical effect for equivalent requests."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Evolve and Restore State"
+  short_description: "Keep durable history safe through change"
+  default_prompt: "Use $principle-evolve-and-restore-state to make this deployment, migration, or restore safe for durable history."
+policy:
+  allow_implicit_invocation: true

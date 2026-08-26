@@ -1,0 +1,6 @@
+interface:
+  display_name: "Coordinate External Effects"
+  short_description: "Deliver, reconcile, or compensate durable intent"
+  default_prompt: "Use $principle-coordinate-external-effects to design delivery, reconciliation, and repair for this effect."
+policy:
+  allow_implicit_invocation: true

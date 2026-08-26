@@ -1,0 +1,6 @@
+interface:
+  display_name: "State Consistency Contracts"
+  short_description: "Name the freshness every decision requires"
+  default_prompt: "Use $principle-state-consistency-contracts to state and enforce this read's authority, freshness, and fallback."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Distributed Systems Guidelines"
+  short_description: "Route reliability claims to their enforcing rules"
+  default_prompt: "Use $distributed-systems-guidelines to identify and enforce the guarantees this design requires."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Bound Retries"
+  short_description: "Classify, budget, and limit repeated work"
+  default_prompt: "Use $principle-bound-retries to make these retries safe, finite, and capacity-aware."
+policy:
+  allow_implicit_invocation: true

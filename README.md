@@ -2,7 +2,7 @@
 
 I bought a new Mac, set it up mostly from memory, then realized memory was the worst place to keep the recipe. This repository is the recipe.
 
-It has two jobs. `cfg/` rebuilds the terminal and development environment I use every day. `skills/` changes how my coding agents behave. If a tool is here, it should earn its place. If an agent phrase annoys me twice, it becomes a rule.
+It has three jobs. `cfg/` rebuilds the terminal and development environment I use every day. `docs/` keeps engineering references worth reusing. `skills/` changes how my coding agents behave. If a tool is here, it should earn its place. If an agent phrase annoys me twice, it becomes a rule.
 
 This is not a universal dotfiles framework. It is my setup, written down well enough to share, audit, and change without losing the plot.
 
@@ -85,7 +85,7 @@ The gate checks Python formatting and lint, executes the tests, passes every ski
 
 ## Agent skills
 
-The repository currently has 35 skills in six categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
+The repository currently has 49 skills in seven categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
@@ -95,6 +95,7 @@ The skills follow the open [Agent Skills](https://agentskills.io/) format. The s
 | [Engineering](skills/engineering/README.md) | 6 | Code comments, generated API contracts, domain behavior, pure transformations, project terminology, and decision records. |
 | [Productivity](skills/productivity/README.md) | 1 | Shared understanding, question dependencies, decisions, and provenance across long conversations. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
+| [Systems](skills/systems/README.md) | 14 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, and containment. |
 | [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
 | [UI](skills/ui/README.md) | 9 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, shadcn normalization, and state. |
 
@@ -158,10 +159,12 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `cfg/zshrc` | Shared shell configuration and aliases. |
 | `cfg/git.sh` | Git identity, SSH key setup, and commit signing. |
 | `cfg/setup.sh` | The macOS rebuild sequence. |
+| `docs/` | Generally useful engineering references and direct source material for skills. |
 | `skills/communication/` | Rules for language, voice, and agent authority. |
 | `skills/engineering/` | Rules for code comments, generated API contracts, domain code, value transformations, terminology, and ADRs. |
 | `skills/productivity/` | Workflows for durable shared understanding and conversational provenance. |
 | `skills/security/` | SOPS setup, synchronization, naming, and audit rules. |
+| `skills/systems/` | Distributed-systems routing, durable work, failure-boundary, effect, recovery, and containment rules. |
 | `skills/testing/` | Testing process, proof strategies, fixtures, boundaries, determinism, execution, and support. |
 | `skills/ui/` | React component authoring rules and the explicit review pass. |
 | `skills/**/agents/openai.yaml` | Codex and ChatGPT presentation metadata. |
@@ -174,7 +177,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 
 ## Add a skill
 
-Each skill lives in one of the six category directories and contains `SKILL.md`. Keep the main instructions agent-neutral. Put OpenAI presentation metadata under `agents/`, preserve upstream licenses, and say where remixed work came from. Update the category README when the skill changes what that category claims to cover.
+Each skill lives in one of the seven category directories and contains `SKILL.md`. Keep the main instructions agent-neutral. Put OpenAI presentation metadata under `agents/`, preserve upstream licenses, and say where remixed work came from. Update the category README when the skill changes what that category claims to cover.
 
 Add the skill directory to the `skills` array in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). Claude needs explicit paths because this repository groups some skills into category directories.
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Operational Control"
+  short_description: "Keep accepted and recovery work within capacity"
+  default_prompt: "Use $principle-operational-control to bound this workload and define its overload behavior."
+policy:
+  allow_implicit_invocation: true

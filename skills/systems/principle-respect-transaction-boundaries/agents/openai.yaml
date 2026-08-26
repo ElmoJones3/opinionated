@@ -1,0 +1,6 @@
+interface:
+  display_name: "Respect Transaction Boundaries"
+  short_description: "Keep atomicity inside its real participants"
+  default_prompt: "Use $principle-respect-transaction-boundaries to locate the real commit boundary and close its failure windows."
+policy:
+  allow_implicit_invocation: true

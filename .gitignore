@@ -3,3 +3,6 @@
 # Python bytecode belongs to the interpreter that created it, not the repository.
 __pycache__/
 *.py[cod]
+
+# Raw source inputs inform curated documents but remain local working material.
+.private/

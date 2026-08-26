@@ -1,0 +1,6 @@
+interface:
+  display_name: "Record Effective Inputs"
+  short_description: "Control or retain every result-changing input"
+  default_prompt: "Use $principle-record-effective-inputs to expose the inputs and evidence this result contract requires."
+policy:
+  allow_implicit_invocation: true

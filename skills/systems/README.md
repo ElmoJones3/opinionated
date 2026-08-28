@@ -1,6 +1,6 @@
 # Distributed systems skills
 
-These skills turn the repository's distributed-systems teaching material into rules an agent can apply while changing real code. `distributed-systems-guidelines` is the mandatory router. The narrower principles own durable work, uncertain messages, retry, idempotency, authority, reads, transactions, effects, effective inputs, overload, recovery, containment, and intervention.
+These skills turn the repository's distributed-systems teaching material into rules an agent can apply while changing real code. `distributed-systems-guidelines` is the mandatory router. The narrower principles own durable work, uncertain messages, retry, idempotency, authority, reads, transactions, effects, effective inputs, overload, recovery, containment, and intervention. `distributed-systems-audit` is the explicit review pass that walks every principle and writes a graded defect report.
 
 The source documents remain the teaching and vocabulary layers:
 
@@ -31,6 +31,7 @@ flowchart TD
 
 | Skill | Load it when |
 | --- | --- |
+| [`distributed-systems-audit`](distributed-systems-audit/SKILL.md) | An explicit audit should walk every systems principle and write a Markdown report with defects and an overall grade. |
 | [`distributed-systems-guidelines`](distributed-systems-guidelines/SKILL.md) | A change creates or relies on a correctness or recovery claim across independently failing components. |
 | [`principle-model-durable-work`](principle-model-durable-work/SKILL.md) | Work can outlive, move between, resume after, or retry across workers. |
 | [`principle-handle-message-uncertainty`](principle-handle-message-uncertainty/SKILL.md) | Requests, replies, acknowledgements, cancellation, or delivery can be lost, repeated, delayed, or reordered. |
@@ -51,3 +52,5 @@ flowchart TD
 The split follows the mechanism that must carry the guarantee. Durable work owns the recovery record. Message uncertainty owns honest knowledge. Retry owns permission and budgets for another execution. Idempotency owns receiver arbitration. Authority owns which actor may commit. Transactions own one participant set. External-effects coordination owns the protocol after that commit.
 
 The language references are selected only after the applicable principle is known. TypeScript, Go, Python, and C++ examples must express the same identity, state, enforcement, failure, and proof contract even when their libraries and idioms differ.
+
+The audit is broader than the router's ordinary use. It records every principle as applicable or not applicable, scores applicable principles from concrete defects with a tested calculator, and keeps severe failures from disappearing inside an average. It changes only its Markdown report unless the user also asks for fixes.

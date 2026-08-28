@@ -85,7 +85,7 @@ The gate checks Python formatting and lint, executes the tests, passes every ski
 
 ## Agent skills
 
-The repository currently has 49 skills in seven categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
+The repository currently has 50 skills in seven categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
@@ -95,7 +95,7 @@ The skills follow the open [Agent Skills](https://agentskills.io/) format. The s
 | [Engineering](skills/engineering/README.md) | 6 | Code comments, generated API contracts, domain behavior, pure transformations, project terminology, and decision records. |
 | [Productivity](skills/productivity/README.md) | 1 | Shared understanding, question dependencies, decisions, and provenance across long conversations. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
-| [Systems](skills/systems/README.md) | 14 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, and containment. |
+| [Systems](skills/systems/README.md) | 15 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, containment, and audits. |
 | [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
 | [UI](skills/ui/README.md) | 9 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, shadcn normalization, and state. |
 

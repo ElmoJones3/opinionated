@@ -32,6 +32,7 @@
     "./skills/security/sops-naming/",
     "./skills/security/sops-setup/",
     "./skills/security/sops-sync/",
+    "./skills/systems/distributed-systems-audit/",
     "./skills/systems/distributed-systems-guidelines/",
     "./skills/systems/principle-bound-retries/",
     "./skills/systems/principle-contain-untrusted-work/",

@@ -1,10 +1,8 @@
 # opinionated
 
-I bought a new Mac, set it up mostly from memory, then realized memory was the worst place to keep the recipe. This repository is the recipe.
+I have opinions. This is my setup; I hope it helps you somehow.
 
-It has three jobs. `cfg/` rebuilds the terminal and development environment I use every day. `docs/` keeps engineering references worth reusing. `skills/` changes how my coding agents behave. If a tool is here, it should earn its place. If an agent phrase annoys me twice, it becomes a rule.
-
-This is not a universal dotfiles framework. It is my setup, written down well enough to share, audit, and change without losing the plot.
+- Stan
 
 ## The machine recipe
 
@@ -36,7 +34,7 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./cfg/setup.sh
 
 Raycast and Cursor stay manual. Both are downloads with account setup, and pretending that a shell script completes those jobs would be fiction. The script also leaves the first Grok Build and Codex sign-ins to the person at the keyboard.
 
-## Why these choices
+## Why
 
 ### Homebrew
 
@@ -85,7 +83,7 @@ The gate checks Python formatting and lint, executes the tests, passes every ski
 
 ## Agent skills
 
-The repository currently has 49 skills in seven categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
+The repository currently has 50 skills in seven categories. Each skill owns one rule or one coordinated review. That split matters. An agent should load the rule it needs, not a handbook full of unrelated preferences.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
@@ -95,7 +93,7 @@ The skills follow the open [Agent Skills](https://agentskills.io/) format. The s
 | [Engineering](skills/engineering/README.md) | 6 | Code comments, generated API contracts, domain behavior, pure transformations, project terminology, and decision records. |
 | [Productivity](skills/productivity/README.md) | 1 | Shared understanding, question dependencies, decisions, and provenance across long conversations. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
-| [Systems](skills/systems/README.md) | 14 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, and containment. |
+| [Systems](skills/systems/README.md) | 15 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, containment, and audits. |
 | [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
 | [UI](skills/ui/README.md) | 9 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, shadcn normalization, and state. |
 

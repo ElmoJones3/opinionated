@@ -6,6 +6,8 @@ VENV := .venv
 VENV_PYTHON := $(VENV)/bin/python
 # The stamp refreshes dependencies whenever their declaration or tool policy changes.
 DEV_STAMP := $(VENV)/.requirements-dev.stamp
+# Python quality checks include repository commands, tests, and executable skill helpers.
+PYTHON_SOURCES := scripts tests skills/systems/distributed-systems-audit/scripts
 
 # These are command entry points, not files produced by Make.
 .PHONY: help sync-zsh sync-brew version dev format lint test quick-validate validate
@@ -45,13 +47,13 @@ $(DEV_STAMP): requirements-dev.txt pyproject.toml
 
 # format applies import fixes before Black settles final Python layout.
 format: dev
-	$(VENV)/bin/ruff check --fix scripts tests
-	$(VENV)/bin/black scripts tests
+	$(VENV)/bin/ruff check --fix $(PYTHON_SOURCES)
+	$(VENV)/bin/black $(PYTHON_SOURCES)
 
 # lint proves Ruff and Black accept the committed Python without rewriting it.
 lint: dev
-	$(VENV)/bin/ruff check scripts tests
-	$(VENV)/bin/black --check scripts tests
+	$(VENV)/bin/ruff check $(PYTHON_SOURCES)
+	$(VENV)/bin/black --check $(PYTHON_SOURCES)
 
 # test executes every maintenance test with verbose collection evidence.
 test: dev

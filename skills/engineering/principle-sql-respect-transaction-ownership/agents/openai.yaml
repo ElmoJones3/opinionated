@@ -1,0 +1,6 @@
+interface:
+  display_name: "Respect SQL Transaction Ownership"
+  short_description: "Keep adapters inside the caller-owned transaction"
+  default_prompt: "Use $principle-sql-respect-transaction-ownership to review transaction participation and atomicity in this SQL operation."
+policy:
+  allow_implicit_invocation: true

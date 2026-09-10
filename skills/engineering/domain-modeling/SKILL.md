@@ -1,90 +1,121 @@
 ---
 name: domain-modeling
-description: Make business objects own their behavior and valid state. Mandatory when creating, changing, reviewing, or diagnosing domain objects, business rules, state changes, or domain invariants.
-user-invocable: false
+description: Make business objects own their behavior, construction, invariants, and consequences. Use when creating, changing, reviewing, or diagnosing domain models and their public contracts.
 ---
 
 # Model domain behavior
 
-A domain model is the smallest contract that behaves. It owns what may happen, when it may happen, what changes, what else follows, and how failure appears.
+A domain owns what an operation means, when it is legal, what changes, and what
+follows from it. Callers should express the complete intent without assembling
+the model's internal state or restating its rules.
 
-Make illegal states unreachable through ordinary behavior APIs. A schema can reject an impossible shape and still admit a valid state that was never earned. Constructors establish legal initial states. Domain behavior earns later states. Hydration restores and validates existing state, but it does not earn a transition. Keep hydration off the application-facing API when the language can enforce that boundary; otherwise make the bypass explicit and adapter-only by architecture.
+Read the relevant project terms and local contract before changing the model.
+Use `semantic-mapping` when establishing or changing terminology or ownership.
 
-Before naming or renaming a domain concept, load `semantic-mapping` when it is available and read the existing project terms. Semantic files own the vocabulary. This skill owns the behavior.
+## Establish the responsible owner
 
-## Build the contract
+Identify the object or aggregate whose invariant changes. Its public contract
+owns the operation and its required consequences. When several owners
+participate, each supplies its own behavior; an application coordinates them.
 
-1. Trace the real operation through its caller, checks, state changes, persistence, and effects.
-2. Identify the responsible domain object: the thing whose state or invariant changes.
-3. Classify each change as a command or consequence.
-4. Define its inputs, legal starting states, resulting state, forced effects, facts, and failures.
-5. Load `principle-testing-guidelines`, choose the proof skills those claims require, and write the behavioral tests before the model.
-6. Load `principle-prefer-pure-functional-patterns`. Give the object one entry point with the smallest complete contract: a total function or direct `Change` when it cannot refuse, a modifier when it may refuse, and an emitting modifier when refusal and domain facts both apply.
-7. Keep callers responsible for orchestration, not for restating domain rules.
-8. Add whole-object validation for hydration and other paths that bypass normal behavior.
-9. Finish only when the implemented object behaves according to the contract.
+Keep private representations behind the owner's contract. Do not expose fields,
+downcast an interface, copy another owner's internals, or duplicate its
+validation algorithm to work around a missing operation. Extend the appropriate
+contract within the requested scope. This applies even when two types share a
+package. Shared immutable values do not need interfaces just to cross a boundary.
 
-If several objects change, each owns its own rules. The application computes all pure results before writes, then coordinates persistence and external effects. Use a transaction or unit of work when the operation promises atomic persistence.
+Adapters own transport, storage, policy evaluation, and external integration.
+Domains own business decisions and any attribution or policy defaults assigned
+to them by the project. A domain-owned document or event may have a serialized
+representation without making a business entity a transport or database record.
 
-## Distinguish commands from consequences
+## Distinguish construction, behavior, and restoration
 
-A command represents an explicit decision by an actor or system. Its entry point checks the state and inputs that make the decision legal.
+A complete constructor accepts the caller's construction inputs, validates the
+owned model, and returns its complete result. Nested construction belongs to the
+owner, not a caller's sequence of internal builders. Follow the project's input
+and return conventions.
 
-A consequence occurs because a domain fact happened. Name its entry point for that fact or trigger, then let the object derive the result. Do not expose a shortcut that sets the consequence without earning it.
+A bare seed may be an intentional first step in incremental construction.
+Distinguish it from a complete value eligible for use or persistence. Commands
+enforce the invariants required at their stage; completion enforces the final
+contract. Do not make ordinary construction possible only through hydration.
 
-For every behavior, make these answers visible in code and its domain proofs:
+For independently valid aggregates, complete and incremental construction must
+represent equivalent caller-controlled state when both paths are provided.
+They need not share an algorithm or reproduce generated identities byte for
+byte. Bulk construction must not be forced to replay incremental commands.
+Children do not independently earn membership or structural changes owned by
+their aggregate.
 
-- accepted inputs and any actor or policy relevant to legality;
-- legal and illegal starting states;
-- resulting state and forced changes;
-- returned value and ordered domain facts; and
-- exact expected failure when the contract is violated.
+Restoration accepts recorded state through a separate, validated adapter-facing
+capability. It preserves identity and history without reissuing creation
+consequences. The domain owns the admitted recorded representation and its
+invariants; the adapter owns retrieval and storage layout. A transport projection
+does not define restoration merely because both representations serialize.
 
-## Make the legal path the easy path
+When partial loading is supported, distinguish unknown data from known absence.
+The caller selects the data required for its task through the owner's contract.
+Those requirements do not waive validation of supplied values. Operations that
+need more data must refuse explicitly, not treat unloaded state as empty or
+fetch it implicitly.
 
-Use factories or validated constructors for initial values. Use a separate validated hydration entry point for stored values. Do not use hydration, direct construction, schema parsing, setters, public state fields, or raw copies to manufacture an earned state.
+A declared import format may accept authored lifecycle or version facts when
+its domain permits them. Neither restoration nor import is a setter for
+bypassing the behavior of an existing object.
 
-Normal fallible behavior uses one of the shared pure-pattern contracts:
+## Name behavior and its consequences
 
-```text
-Modifier[T, E] = T -> Result[T, E]
-EmittingModifier[T, E, F] = T -> Result[Change[T, F], E]
-```
+A command expresses an actor's intent. A consequence follows from accepted
+behavior or an established fact. Let the owner compute it instead of asking
+callers to set a derived status, version, or event by hand.
 
-Each successful entry point returns one complete valid value and every fact forced by that behavior. Failure exposes no partial state or tentative facts. A deliberate no-op is explicit. The behavior cannot return changed state without its forced facts. When those facts must be durable, the application passes the complete `Change` to one settlement operation.
+Make accepted inputs, legal starting states, resulting state, required facts,
+no-ops, and expected refusals visible in the contract. Whole-object validation
+checks valid shape, including restored state; it does not prove that a
+transition was earned.
 
-Expected business refusals belong in the result. Invalid untrusted or hydrated data belongs in whole-object validation. An invariant failure after a modifier received valid inputs is a programmer defect, not another business outcome.
+Choose the public API for the domain's use, following its project conventions.
+Methods, value-returning commands, and discardable edits can all express valid
+behavior. Refusal or event production does not require a modifier pipeline.
+Use `principle-prefer-pure-functional-patterns` for calculations and effect
+separation, not as a second authority over domain signatures.
 
-## Keep the model independent
+Each operation must honor its promised failure boundary. Refusal preserves the
+previous accepted state and does not expose tentative consequences. The domain
+returns or retains all required consequences using its established contract;
+the application owns persistence and delivery.
 
-- Keep state, behavior, and validation in the same domain-owned package or module.
-- Reuse the project's shared identity and lifecycle type.
-- Keep transport names, serialization rules, database annotations, framework objects, and I/O outside the model.
-- Pass facts needed for a decision as plain values. Obtain time, configuration, authorization, and external data before calling the model.
-- Keep validators and modifiers pure. Return fresh values and immutable domain facts.
-- Map domain facts to integration messages outside the model.
+## Versioned immutable artifacts
 
-Whole-object validation is a backstop, not the behavior API. It catches invalid hydration and bypass paths. It cannot prove that a structurally valid transition was earned.
+When the domain is a semantic snapshot, immutable refers to its definitive
+meaning and behavior. Administrative lifecycle actions may remain legal when
+the domain says so. A durable Draft status and a temporary Edit are different
+concepts.
 
-## Use the language reference
+Put semantic authoring commands on the Edit, not on both Edit and snapshot.
+The Edit isolates proposed state from its source and supports inspection before
+acceptance. Completion derives the consequences of effective changes, including
+version and successor identity where required. It is not a database commit.
+Define session consumption and retained-observation behavior explicitly.
 
-Read only the reference for the language being changed:
+This pattern applies to domains whose meaning calls for immutable revisions.
+It does not make every entity versioned or require an Edit for ordinary state
+changes.
 
-- [Go](references/go.md)
-- [Python](references/python.md)
-- [TypeScript](references/typescript.md)
+## Prove the caller's task
 
-Each reference shows how its ecosystem closes construction, earns later states, validates hydration, and selects the state-only or fact-emitting pipeline without importing wire concerns.
+Use `principle-testing-guidelines` for the claims being changed. Build ordinary
+fixtures through public production construction and behavior. Prove exact
+results, refusals, consequences, and preserved state.
 
-## Check the result
+For iterative domains, demonstrate a caller creating, inspecting, correcting,
+and accepting or discarding work. Small validator cases cannot substitute for
+that narrative. Use restoration only for restoration proofs.
 
-- The responsible object owns every legal transition and invariant.
-- Constructors expose only legal initial states; hydration validates without acting as behavior.
-- Ordinary behavior APIs make illegal and unearned states unreachable; any unavoidable exported hydration path is an explicit, validated adapter capability.
-- Each success includes every forced state change and domain fact; durable settlement accepts them together.
-- Each refusal preserves the original value and exposes no tentative facts.
-- Callers load, authorize, call, settle, and publish without duplicating domain rules.
-- Domain proofs cover legal behavior, exact refusals, forced effects, facts, and hydration backstops through the public contract.
-- Validators and transitions avoid I/O and hidden ambient state.
-
-After a successful model establishes settled terms or ownership, load `semantic-mapping` if needed and apply it. Record the vocabulary, not the behavior contract.
+Language-specific ownership guidance is available when needed:
+[Go](references/go.md), [Python](references/python.md), and
+[TypeScript](references/typescript.md). These references do not prescribe a
+functional framework or replace the project's domain conventions.
+Load the matching reference for language-specific work. The Go reference routes
+context-bearing operations to the shared context principle.

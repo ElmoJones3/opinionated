@@ -1,0 +1,6 @@
+interface:
+  display_name: "Preserve SQL Query Cardinality"
+  short_description: "Preserve roots, children, and page boundaries"
+  default_prompt: "Use $principle-sql-preserve-query-cardinality to review root selection, child completeness, and pagination in this SQL read."
+policy:
+  allow_implicit_invocation: true

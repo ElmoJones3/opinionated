@@ -1,0 +1,6 @@
+interface:
+  display_name: "Use JSONB Deliberately"
+  short_description: "Own JSONB formats, compatibility, and query support"
+  default_prompt: "Use $principle-sql-use-jsonb-deliberately to define the stored format, version compatibility, and query contract for this JSONB payload."
+policy:
+  allow_implicit_invocation: true

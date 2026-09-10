@@ -1,0 +1,6 @@
+interface:
+  display_name: "Respect Go Context"
+  short_description: "Preserve caller lifetimes through Go work"
+  default_prompt: "Use $principle-golang-respect-context to preserve cancellation and request ownership in this Go operation."
+policy:
+  allow_implicit_invocation: true

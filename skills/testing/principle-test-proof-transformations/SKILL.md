@@ -16,4 +16,4 @@ Call the transformation directly with explicit values and pin the complete resul
 
 For new behavior, use `principle-test-tdd`. The first red must identify the missing output or pipeline behavior, not fail because setup, compilation, or an earlier guard is wrong.
 
-When available, load the matching Go, Python, or TypeScript reference from `principle-prefer-pure-functional-patterns`. Those references show modifier pipelines, reusable validation rules, exact outputs, short-circuiting, explicit time, and nested non-mutation in the language's normal style.
+Consult the matching language reference in `principle-prefer-pure-functional-patterns` when language-specific copying, error, or composition choices affect the proof. Those references explain ownership and effect boundaries; they do not require a modifier pipeline or generic result carrier. Test the operation's existing contract rather than reshaping its API to fit a test pattern.

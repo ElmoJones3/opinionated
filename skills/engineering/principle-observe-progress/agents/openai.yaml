@@ -1,0 +1,6 @@
+interface:
+  display_name: "Observe Progress"
+  short_description: "Distinguish useful progress from activity"
+  default_prompt: "Use $principle-observe-progress to define and verify live evidence for this producer or long-running operation."
+policy:
+  allow_implicit_invocation: true

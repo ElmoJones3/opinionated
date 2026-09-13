@@ -1,0 +1,6 @@
+interface:
+  display_name: "Observe Operations"
+  short_description: "Unify operation lifetimes and completion evidence"
+  default_prompt: "Use $principle-observe-operations to instrument this operation with one owned lifetime and coherent completion evidence."
+policy:
+  allow_implicit_invocation: true

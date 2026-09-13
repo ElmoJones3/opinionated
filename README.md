@@ -83,21 +83,21 @@ The gate checks Python formatting and lint, executes the tests, passes every ski
 
 ## Agent skills
 
-The repository currently has 55 skills in seven categories. Each skill owns one rule or one coordinated review. Choose the skills that fit the project, then load the ones whose subject applies to the task.
+The repository currently has 59 skills in seven categories. Each skill owns one rule or one coordinated review. Choose the skills that fit the project, then load the ones whose subject applies to the task.
 
 The skills follow the open [Agent Skills](https://agentskills.io/) format. The same `SKILL.md` directories work with [Codex and ChatGPT](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/plugins). Product-specific manifests package those shared instructions without maintaining a second copy.
 
 | Category | Skills | What they govern |
 | --- | ---: | --- |
 | [Communication](skills/communication/README.md) | 3 | Plain language, human voice, and respect for user authority. |
-| [Engineering](skills/engineering/README.md) | 11 | Domain ownership, pure calculations, Go request lifetimes, SQL and JSONB contracts, comments, API documentation, terminology, and decision records. |
+| [Engineering](skills/engineering/README.md) | 15 | Domain ownership, pure calculations, observability, Go request lifetimes, SQL and JSONB contracts, comments, API documentation, terminology, and decision records. |
 | [Productivity](skills/productivity/README.md) | 1 | Shared understanding, question dependencies, decisions, and provenance across long conversations. |
 | [Security](skills/security/README.md) | 4 | SOPS naming, safe synchronization, repository setup, and audits. |
 | [Systems](skills/systems/README.md) | 15 | Distributed work, uncertainty, retries, authority, effects, capacity, recovery, containment, and audits. |
 | [Testing](skills/testing/README.md) | 12 | TDD, characterization, honest fixtures, faithful boundaries, execution, and behavior-specific proof. |
 | [UI](skills/ui/README.md) | 9 | React component boundaries, layout, styling, variants, prop contracts, compound APIs, shadcn normalization, and state. |
 
-Some installed rules are mandatory whenever their subject appears. Explicit review skills run only when asked. The frontmatter says which is which; the prose does not get to quietly weaken it. The Go and SQL principles are optional additions with focused triggers and normal automatic discovery.
+Some installed rules are mandatory whenever their subject appears. Explicit review skills run only when asked. The frontmatter says which is which; the prose does not get to quietly weaken it. The Go, SQL, and observability principles are optional additions with focused triggers and normal automatic discovery.
 
 ### The opinions behind the code
 
@@ -111,11 +111,17 @@ JSONB is a storage contract. Meaningful payloads need an owner, an identifiable 
 
 A Go operation that accepts a context also accepts a lifetime. Check it before spending work, carry it into dependent calls, and preserve cancellation through error handling. Prove the checkpoint with a competing validation failure or an observable work hook. A driver rejecting a canceled request does not prove the application stopped before doing unnecessary work.
 
+Observability starts with owned work. One operation accumulates the evidence of what happened and finalizes it when its work ends. A completed span can carry that rich account, and a wide log can present it. Both views must preserve the same identity, lifetime, and result meaning. Correlation IDs alone cannot reconcile two independently authored stories.
+
+A successful operation can return complete but stale data and miss its latency target. Those facts belong together. Live evidence should distinguish useful advancement from activity, and a delayed update should remain old when it arrives. Reports need declared populations and visible gaps in coverage. Collection needs finite costs and an honest account of lost evidence. These decisions compose around the same operation.
+
 ### Build the skill tree for the project
 
-Keep each rule with the skill that owns the decision. Domain modeling owns construction, legal behavior, and consequences. Functional guidance owns calculations and effect separation. SQL principles own persisted relationships, query results, and transaction participation. Testing skills choose the evidence needed for the claim. Language references add details such as Go interface nils or shallow copies in Python and TypeScript only when those details matter.
+Keep each rule with the skill that owns the decision. Domain modeling owns construction, legal behavior, and consequences. Functional guidance owns calculations and effect separation. SQL principles own persisted relationships, query results, and transaction participation. Observability separates operation ownership, live progress, interpretation, and collection limits into four skills. Testing skills choose the evidence needed for the claim. Language references add details such as Go interface nils or shallow copies in Python and TypeScript only when those details matter.
 
 Project-specific skills bind these principles to local ports, libraries, schemas, and commands. A shared principle can require a transaction's participants to preserve atomicity while the project chooses its transaction API. Keeping that distinction explicit lets different projects use the same principle with different implementations.
+
+The observability references use one [shared example contract](skills/engineering/principle-observe-operations/references/parity.md) with JavaScript, Python, and Go assertions. They label fixture choices as examples and explain where context propagation, cancellation, numeric representation, and exporter behavior depend on the language. OpenTelemetry supplies the standard signal model; each project supplies its operational meaning. The proof follows actual exported evidence through receiving and interpretation, then checks that the span and wide-record views answer the same question.
 
 The check on a skill is what an agent does with it. Validate the skill's structure, then try a realistic task when the decisions warrant it. Inspect the resulting API, behavior, and evidence. A useful instruction helps the agent preserve the caller's contract without sending it into unrelated work.
 
@@ -179,7 +185,7 @@ Plugin skills use the `opinionated:` namespace. For example, invoke `unslop` as 
 | `cfg/setup.sh` | The macOS rebuild sequence. |
 | `docs/` | Generally useful engineering references and direct source material for skills. |
 | `skills/communication/` | Rules for language, voice, and agent authority. |
-| `skills/engineering/` | Domain and calculation contracts, Go lifetimes, SQL and JSONB principles, code comments, generated APIs, terminology, and ADRs. |
+| `skills/engineering/` | Domain and calculation contracts, observability, Go lifetimes, SQL and JSONB principles, code comments, generated APIs, terminology, and ADRs. |
 | `skills/productivity/` | Workflows for durable shared understanding and conversational provenance. |
 | `skills/security/` | SOPS setup, synchronization, naming, and audit rules. |
 | `skills/systems/` | Distributed-systems routing, durable work, failure-boundary, effect, recovery, and containment rules. |

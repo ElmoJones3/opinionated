@@ -1,0 +1,6 @@
+interface:
+  display_name: "Interpret Observations"
+  short_description: "Preserve meaning from received operational evidence"
+  default_prompt: "Use $principle-interpret-observations to build or review this operational report from received evidence."
+policy:
+  allow_implicit_invocation: true

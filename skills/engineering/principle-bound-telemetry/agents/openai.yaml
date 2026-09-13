@@ -1,0 +1,6 @@
+interface:
+  display_name: "Bound Telemetry"
+  short_description: "Bound collection cost and expose telemetry loss"
+  default_prompt: "Use $principle-bound-telemetry to configure and prove collection limits, failure handling, and shutdown for this telemetry path."
+policy:
+  allow_implicit_invocation: true

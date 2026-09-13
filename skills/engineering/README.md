@@ -1,8 +1,8 @@
 # Engineering skills
 
-These skills assign decisions to their owners. A domain owns construction, business behavior, and consequences. Pure calculations keep inputs and effects explicit. Go operations respect their caller's lifetime. SQL adapters preserve the transaction, relationships, and query results their contracts promise.
+These skills assign decisions to their owners. A domain owns construction, business behavior, and consequences. Pure calculations keep inputs and effects explicit. Observations preserve the meaning of owned work. Go operations respect their caller's lifetime. SQL adapters preserve the transaction, relationships, and query results their contracts promise.
 
-Choose the applicable principles for the project. The Go and SQL skills are optional additions; each describes the work that should activate it. Project-specific skills supply local APIs, libraries, and adapter conventions.
+Choose the applicable principles for the project. The Go, SQL, and observability skills are optional additions; each describes the work that should activate it. Project-specific skills supply local APIs, libraries, and adapter conventions.
 
 ## Choose the responsible contract
 
@@ -10,6 +10,10 @@ Choose the applicable principles for the project. The Go and SQL skills are opti
 | --- | --- | --- |
 | Domain construction and behavior | [`domain-modeling`](domain-modeling/SKILL.md) | Complete construction, commands, consequences, restoration, partial loading, and isolated Edits for immutable revisions. |
 | Calculations and effects | [`principle-prefer-pure-functional-patterns`](principle-prefer-pure-functional-patterns/SKILL.md) | Explicit inputs, ownership, relevant non-mutation, error conventions, and separation of calculation from delivery. |
+| Operation observations | [`principle-observe-operations`](principle-observe-operations/SKILL.md) | Owned execution context and lifetime, one completion meaning across trace and wide-record views, and distinct result assessments. |
+| Live progress | [`principle-observe-progress`](principle-observe-progress/SKILL.md) | Useful advancement, activity, waits, phase budgets, source freshness, and producer completion. |
+| Operational interpretation | [`principle-interpret-observations`](principle-interpret-observations/SKILL.md) | Received representations, ordering, terminal evidence, versions, populations, and coverage. |
+| Collection limits | [`principle-bound-telemetry`](principle-bound-telemetry/SKILL.md) | Admitted fields, bounded cardinality and collection, business-result preservation, observable loss, and cleanup. |
 | Go request lifetimes | [`principle-golang-respect-context`](principle-golang-respect-context/SKILL.md) | Context entry checks, propagation, retained sessions, cancellation errors, and proof that abandoned work stops. |
 | SQL atomic operations | [`principle-sql-respect-transaction-ownership`](principle-sql-respect-transaction-ownership/SKILL.md) | Caller-owned transactions, participating reads and writes, isolation claims, rollback, and settlement proof. |
 | SQL identities and relationships | [`principle-sql-preserve-relational-integrity`](principle-sql-preserve-relational-integrity/SKILL.md) | Foreign keys, scoped uniqueness, explicit column mappings, partial writes, and existing-data migrations. |
@@ -44,10 +48,20 @@ For example, finding a customer by one email still returns every requested email
 
 The broader systems skill [`principle-respect-transaction-boundaries`](../systems/principle-respect-transaction-boundaries/SKILL.md) covers commit ambiguity and effects across resources. The SQL ownership principle supplies the narrower adapter-participation contract. Load each when its claim applies.
 
+## One operation across signals
+
+The operation owner defines what success, completeness, quality, performance, and known effects mean. A completed span can carry that accumulated account. A wide-record projection preserves its meaning without each caller constructing another completion. Standard span and log envelopes still differ; parity is a claim about the operation contract and the answer a report derives from it.
+
+The four observability skills follow separate decisions. Start with execution ownership when instrumenting a boundary. Add progress guidance for a live producer, interpretation guidance for a receiver or report, and collection guidance for capacity, sensitive fields, export failure, or shutdown. Each has its own discovery trigger. None supplies a project's business schema, runtime authority, or deployment defaults.
+
+The [shared example contract](principle-observe-operations/references/parity.md) uses a successful search that returns an admitted stale page and misses its latency target. Actual SDK evidence must produce the same assessment through its span and wide-record views. Removing required evidence must change the answer or cause an explicit refusal. Further examples cover a producer canceled without terminal-event consumption, delayed and reordered records, independent population measurements, and collection pressure.
+
+Each observability skill has JavaScript, Python, and Go references. Assertions and fixture schemas are explicitly illustrative. The references explain language differences that affect the proof, including async context, generator closure, goroutine ownership, wire-number precision, and exporter cooperation. The [OpenTelemetry reference](principle-observe-operations/references/opentelemetry.md) ties the shared meaning to standard signals.
+
 ## Prove the operation
 
 Use [`principle-testing-guidelines`](../testing/principle-testing-guidelines/SKILL.md) to select proof. An authoring workflow needs observable creation, inspection, correction, acceptance, and discard behavior. A transformation test follows the operation's existing API. SQL claims need the real database's query, constraint, and transaction semantics.
 
-Assert exact results and preserved state. A reader and writer that omit the same column can agree with each other while losing data. A cancellation test that observes only a driver's error may miss work already performed. Shape the proof around the boundary that owns the guarantee.
+Assert exact results and preserved state. A reader and writer that omit the same column can agree with each other while losing data. A cancellation test that observes only a driver's error may miss work already performed. Two telemetry views can agree while both omit the fact an operator needs. Shape the proof around the boundary that owns the guarantee.
 
 Semantic files record accepted vocabulary and ownership. ADRs preserve the reasoning behind architectural decisions. Keep those records consistent with the implemented contract.

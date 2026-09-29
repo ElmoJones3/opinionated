@@ -5,11 +5,11 @@ description: Prove exact input-to-output behavior, composition order, failure po
 
 # Prove the transformation
 
-Call the transformation directly with explicit values and pin the complete result that matters.
+Apply the contract and value boundary in `principle-testing-guidelines`. Reuse tests that already exercise the transformation and establish its required result. Add direct cases with explicit values only for required outcomes that remain unproved; a helper or pipeline does not automatically need its own suite.
 
-- Assert exact output for representative inputs and boundaries.
+- Assert exact output for required inputs and boundaries not already covered by sufficient evidence.
 - Assert the original input and reachable mutable members remain unchanged when non-mutation is claimed.
-- For a pipeline, prove order, short-circuiting or accumulation, and whether later steps run after failure.
+- For a pipeline, prove its required order and failure policy, including short-circuiting, accumulation, or whether later steps run after failure when those belong to the contract.
 - Pass time, configuration, policy, and randomness as controlled inputs.
 - Use `principle-test-proof-failures` for structured rejection evidence.
 - Use `principle-test-proof-state-transitions` when the main contract is a legal next state rather than a calculation.

@@ -105,13 +105,15 @@ changes.
 
 ## Prove the caller's task
 
-Use `principle-testing-guidelines` for the claims being changed. Build ordinary
-fixtures through public production construction and behavior. Prove exact
-results, refusals, consequences, and preserved state.
+Use `principle-testing-guidelines` to select necessary evidence for the caller's
+task and reuse existing coverage. Use `principle-test-fixtures` for valid,
+production-reachable starting states. Exercise construction and transitions
+when they belong to the claim; later behavior need not replay unrelated history.
 
 For iterative domains, demonstrate a caller creating, inspecting, correcting,
 and accepting or discarding work. Small validator cases cannot substitute for
-that narrative. Use restoration only for restoration proofs.
+that narrative. A restored fixture cannot establish that creation or an earlier
+transition works.
 
 Language-specific ownership guidance is available when needed:
 [Go](references/go.md), [Python](references/python.md), and

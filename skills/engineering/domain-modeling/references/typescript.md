@@ -35,6 +35,8 @@ Promises and effect wrappers describe execution contracts, not proof of purity.
 ## Restoration proof
 
 Restore recorded identity and history through validated domain-owned machinery,
-without replaying creation. Use public behavior for ordinary fixtures. Test
-retained snapshots and rejected operations against independently observed
-before-state, not only against an alias of the same object.
+without replaying creation. Follow `principle-test-fixtures` when using restored
+state in tests. A valid snapshot can stage later behavior without proving the
+earlier creation or transition. Test retained snapshots and rejected operations
+against independently observed before-state, not only against an alias of the
+same object.

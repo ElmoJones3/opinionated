@@ -1,6 +1,6 @@
 interface:
   display_name: "Test-Driven Development"
-  short_description: "Observe the intended failure before implementation"
-  default_prompt: "Use $principle-test-tdd to prove this behavior red, green, then safe to refactor."
+  short_description: "Make the feature's outcome work from its first red"
+  default_prompt: "Use $principle-test-tdd to observe the requested outcome fail through its caller entry point, then implement the feature until that example works."
 policy:
   allow_implicit_invocation: true

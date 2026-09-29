@@ -5,7 +5,7 @@ description: Prove the intended tests actually ran. Mandatory whenever a test co
 
 # Reject false green
 
-A successful command is evidence only when the intended tests were collected and executed against the required environment.
+Select verification for the required outcomes under `principle-testing-guidelines`. A successful command is evidence only when the intended tests were collected and executed against the required environment. Use focused runs during implementation and required regression checks before completion; repeat broad runs only when changes or findings justify them. Executing a test proves nothing about whether its assertion serves the requested contract.
 
 - Identify the test names, package, project, or shard expected to run.
 - Load required harness environment and dependencies before execution.

@@ -1,6 +1,6 @@
 interface:
   display_name: "Test Support"
-  short_description: "Share test machinery without hiding the proof"
-  default_prompt: "Use $principle-test-support to extract reusable test support while keeping each claim visible."
+  short_description: "Reuse support for necessary tests without expansion"
+  default_prompt: "Use $principle-test-support to reuse or simplify support for tests of the requested contract while keeping each required outcome visible."
 policy:
   allow_implicit_invocation: true

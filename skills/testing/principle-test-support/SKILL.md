@@ -5,7 +5,7 @@ description: Extract reusable test builders, assertions, fakes, and harness setu
 
 # Share proof machinery, not test meaning
 
-Extract test support when the same contract-aware setup or assertion is being reimplemented, or when one harness must stay consistent across packages.
+Apply the contract and value boundary in `principle-testing-guidelines` to the tests before investing in their support. Reuse existing helpers. Extract support only when cases proving required outcomes repeat setup or assertions enough that sharing reduces their implementation and maintenance cost. Do not build a general framework for anticipated tests.
 
 Good support owns:
 

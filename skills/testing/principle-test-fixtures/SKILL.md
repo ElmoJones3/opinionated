@@ -5,7 +5,7 @@ description: Build test data that production can actually produce. Mandatory whe
 
 # Keep fixtures honest
 
-A normal fixture must establish its discriminating state through the constructor, seeder, converter, or transition production uses. A loader may retrieve that state only after the fixture has established it through the production path. A test built from an impossible state proves a different system.
+Apply the contract and value boundary in `principle-testing-guidelines` before building test setup. A normal fixture must represent valid state production can reach. When construction or a transition is part of the required outcome, exercise that production path. For later behavior, reuse a valid constructor, builder, or restored snapshot whose reachability is established by the production contract or existing evidence. Do not replay unrelated lifecycle steps in every test.
 
 ## Build the case
 
@@ -13,10 +13,10 @@ A normal fixture must establish its discriminating state through the constructor
 - Change one relevant condition for a negative case.
 - Make every earlier guard pass so the fixture reaches the rule named by the test.
 - Use synthetic values and identities. Never copy operational secrets or customer data.
-- Put shared production-faithful construction in test support. Do not hide impossible shortcuts in a builder.
+- Reuse production-faithful test support. Do not hide impossible shortcuts in a builder or build a general fixture framework for one case.
 
-Do not hand-set the discriminating field that makes the behavior pass. If a fixture called `system`, `verified`, `approved`, or `admin` needs manual state production never creates, stop. Build it through the real path. If the test becomes red, preserve the red and report the defect.
+Do not hand-set a discriminating field to conceal the behavior's defect. A fixture called `system`, `verified`, `approved`, or `admin` must preserve the state production actually creates. If reachability is in doubt, use the real path to settle that doubt. Keep an honest reproduction red and report the defect instead of repairing the fixture around it.
 
-Direct state literals, loaders, and hydration shortcuts are reserved for a named persistence-boundary, hydration, deserialization, corruption, or other untrusted-input claim. Label that path explicitly. They do not prove the transition that normally earns the state and do not justify impossible fixtures for later behavior.
+Direct values or restored snapshots can establish a known valid starting state when its creation is outside the claim and the model permits that construction. They do not prove the transition that earns it. Do not bypass encapsulation or invariants to assemble them. Impossible states belong only in named corruption, deserialization, or other untrusted-input cases.
 
 Read [production reachability](references/production-reachability.md) when a fixture has more than one construction path or a failing test tempts direct assignment.

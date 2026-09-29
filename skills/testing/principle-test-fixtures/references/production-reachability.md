@@ -1,6 +1,6 @@
 # Production reachability
 
-Use this reference when a fixture can be assembled directly or created through a production path. The production path decides whether the state is honest.
+Use this reference when reachability is in doubt or a fixture can use several construction paths. The production contract decides whether the state is honest; each test need not replay its entire history.
 
 ## Do not grant the code the state it failed to create
 
@@ -23,9 +23,9 @@ result = resolve(request, [system])
 assert result == system
 ```
 
-If the second test is red, the resolver or production representation is wrong. Do not change the fixture until it passes.
+If the second test is red, the resolver or production representation is wrong. Do not alter the fixture to conceal that defect.
 
-A state such as `verified`, `approved`, or `admin` follows the same rule. Establish it through the production transition before testing later behavior. Loading a literal with that state tests hydration only; it does not prove the transition works.
+A state such as `verified`, `approved`, or `admin` follows the same honesty rule. Exercise the production transition when the claim includes earning that state. A later behavior test can begin with a valid restored snapshot when the production contract or existing evidence establishes its reachability. It proves that later behavior, not the earlier transition. Preserve required companion facts and use a construction path the model permits.
 
 ## Make a negative reach the named gate
 

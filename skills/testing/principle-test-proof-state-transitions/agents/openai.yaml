@@ -1,6 +1,6 @@
 interface:
   display_name: "State Transition Proofs"
-  short_description: "Prove legal edges, effects, no-ops, and rollback"
-  default_prompt: "Use $principle-test-proof-state-transitions to prove this state machine's complete transition table."
+  short_description: "Prove affected transitions and promised effects"
+  default_prompt: "Use $principle-test-proof-state-transitions to establish the contract's transition outcomes and promised effects that existing tests do not already prove."
 policy:
   allow_implicit_invocation: true

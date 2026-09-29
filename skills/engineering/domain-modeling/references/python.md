@@ -35,6 +35,6 @@ business refusals.
 ## Restoration proof
 
 Adapters map stored data into the owner's validated restoration capability.
-Restore recorded facts without generating new creation consequences. Build
-ordinary test fixtures through public construction and behavior; reserve
-restoration inputs for proofs of restoration itself.
+Restore recorded facts without generating new creation consequences. Follow
+`principle-test-fixtures` when using restored state in tests. A valid snapshot
+can stage later behavior without proving the earlier creation or transition.

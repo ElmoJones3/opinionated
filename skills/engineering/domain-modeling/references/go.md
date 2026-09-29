@@ -47,8 +47,9 @@ validation helper at input boundaries.
 
 Go has no friend packages. An exported restoration function for an adapter
 therefore needs an explicit architectural boundary in addition to validation.
-Restore recorded identity and lifecycle without replaying creation. Do not use
-that path to stage normal behavior tests.
+Restore recorded identity and lifecycle without replaying creation. Follow
+`principle-test-fixtures` when using restored state in tests. A valid snapshot
+can stage later behavior without proving the earlier creation or transition.
 
 A port handle can alias one Edit or pending-event collector. Document which
 methods observe, transfer work, or consume the session. Returning a port is not

@@ -1,6 +1,8 @@
 # Testing skills
 
-These skills make a test prove the behavior it names. `principle-testing-guidelines` is the mandatory router. The narrower skills own process, proof, fixtures, boundaries, determinism, execution, and shared support.
+These skills prove the user's requested outcomes and established contracts. The agent has no authority to redefine value or invent additional requirements. `principle-testing-guidelines` is the mandatory router and owns that boundary. A passing test has value as evidence for a required outcome; an endpoint that does not work has not delivered its feature, regardless of test count.
+
+The story is finite: given valid input, the feature produces its promised outcome; it rejects invalid input it owns; any remaining tests establish other required behavior. Reuse existing evidence, run affected regressions, and stop when the contract is demonstrated. The narrower skills preserve the engineering standards for each proof without creating a separate obligation for each component, strategy, or layer.
 
 ```mermaid
 flowchart TD
@@ -33,7 +35,7 @@ flowchart TD
 | [`principle-test-support`](principle-test-support/SKILL.md) | Test helpers or harness setup repeat. |
 | [`principle-test-proof-transformations`](principle-test-proof-transformations/SKILL.md) | Explicit inputs map to outputs through rules, modifiers, calculations, or pipelines. |
 | [`principle-test-proof-failures`](principle-test-proof-failures/SKILL.md) | A rejection, error, rollback, or preserved state is part of the claim. |
-| [`principle-test-proof-derived-results`](principle-test-proof-derived-results/SKILL.md) | Stored model data feeds a downstream calculation, projection, traversal, score, series, or aggregate. |
-| [`principle-test-proof-state-transitions`](principle-test-proof-state-transitions/SKILL.md) | State plus an input, command, or event determines what happens next. |
+| [`principle-test-proof-derived-results`](principle-test-proof-derived-results/SKILL.md) | The requested change affects a model's downstream consumer result. |
+| [`principle-test-proof-state-transitions`](principle-test-proof-state-transitions/SKILL.md) | Testing or reviewing transitions affected by the requested change. |
 
 Domain modeling, pure transformations, UI state, and secret synchronization keep their own application-specific examples. These testing skills own the common proof standard.

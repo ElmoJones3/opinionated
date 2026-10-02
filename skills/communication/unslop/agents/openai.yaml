@@ -1,4 +1,4 @@
 interface:
   display_name: "Unslop"
-  short_description: "Remove AI tells and restore a human voice"
-  default_prompt: "Use $unslop to rewrite this in a direct, human voice."
+  short_description: "Write concise prose with proportionate claims"
+  default_prompt: "Use $unslop to make this concise and factual, with STE for technical prose."
